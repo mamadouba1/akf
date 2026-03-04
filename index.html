@@ -348,7 +348,7 @@ tbody td{padding:9px 12px;vertical-align:middle}
 
 <div class="ldov" id="ldov">
   <div class="spin"></div>
-  <div class="ldtxt" id="ldtxt">Chargement des données Google Sheets…</div>
+  <div class="ldtxt" id="ldtxt">Chargement des données Supabase…</div>
 </div>
 
 <div class="layout">
@@ -357,10 +357,10 @@ tbody td{padding:9px 12px;vertical-align:middle}
 <div class="sb">
   <div class="sl">
     <div class="sl-logo">🌍</div>
-    <div><h2>Association</h2><p>AKF · Kaolack France</p></div>
+    <div><h2>Association</h2><p>Association des Kébémerois de France</p></div>
   </div>
   <div class="sync-row">
-    <button class="sync-btn" id="sync-btn" onclick="syncData()">🔄 Synchroniser Sheets</button>
+    <button class="sync-btn" id="sync-btn" onclick="loadFromSupabase()">🔄 Actualiser données</button>
   </div>
   <div class="snl">Navigation</div>
   <nav>
@@ -1016,148 +1016,112 @@ g('cr-content')?.addEventListener('dragover',e=>{
 g('cr-content')?.addEventListener('drop',e=>{if(_crDrag&&_crDrop)_crDrop.insertAdjacentElement('beforebegin',_crDrag);});
 
 // ═══════════════════════════════════════════════════════════════════
-// CONFIG — IDs de tes Google Sheets (lecture publique via CSV)
-// ═══════════════════════════════════════════════════════════════════
-const CFG = {
-  membres: {
-    id: '1hdCeQZQUN600ALdRLbYSqtGYl1ydrv6eutqte6aKTys',
-    sheet: 'Inscrits_AKF'
-  },
-  taches: {
-    id: '1-9Mz6T_6HdsxSOh3mRTrs2ClMwv1yblWYuy1r1y19_A',
-    sheet: 'Suivi des activités'
-  }
-};
 
 // ═══════════════════════════════════════════════════════════════════
-// DONNÉES (fallback local — remplacées au sync)
+// DONNÉES (initialisées vides — chargées depuis Supabase)
 // ═══════════════════════════════════════════════════════════════════
-let M = [{"nom": "BA", "prenom": "Mamadou", "sexe": "Homme", "ville": "Compiegne", "telephone": "0677753022", "email": "mamadouba7001@gmail.com", "annee_arrivee": "2019", "statut": "Professionnel", "specialite": "Remote Sensing and Geomatics", "quartier": "Diamaguene", "direction": "Oui", "verification": "Vérifié", "date_inscription": "06/11/2025"}, {"nom": "BA", "prenom": "Amadou", "sexe": "Homme", "ville": "Beauchamp", "telephone": "0753047505", "email": "xamete@gmail.com", "annee_arrivee": "2016", "statut": "Professionnel", "specialite": "Agent de maîtrise hospitalier", "quartier": "Galla", "direction": "Non", "verification": "Vérifié", "date_inscription": "24/11/2025"}, {"nom": "Danfa", "prenom": "Fodé", "sexe": "Homme", "ville": "Le Mans", "telephone": "0651935048", "email": "danfode@gmail.com", "annee_arrivee": "2015", "statut": "Professionnel", "specialite": "Analyste de Résultats Santé/ Prévoyance", "quartier": "Escale", "direction": "Non", "verification": "Vérifié", "date_inscription": "25/11/2025"}, {"nom": "Dia", "prenom": "Serigne saliou", "sexe": "Homme", "ville": "Le Blanc Mesnil", "telephone": "0780772233", "email": "bayssaliu@gmail.com", "annee_arrivee": "2023", "statut": "Étudiant", "specialite": "Mathématiques", "quartier": "Mbabou", "direction": "Non", "verification": "Vérifié", "date_inscription": "14/12/2025"}, {"nom": "Dieng", "prenom": "Ibrahima", "sexe": "Homme", "ville": "Beauchamp", "telephone": "0758462840", "email": "ibrahimadieng370@gmail.com", "annee_arrivee": "2024", "statut": "Professionnel", "specialite": "Transport logistique", "quartier": "DIAMAGUENE", "direction": "Oui", "verification": "Vérifié", "date_inscription": "07/12/2025"}, {"nom": "DIENG", "prenom": "Alimatou", "sexe": "Femme", "ville": "Arras", "telephone": "0609135336", "email": "alimajeng95@gmail.com", "annee_arrivee": "2023", "statut": "Professionnel", "specialite": "Comptable", "quartier": "Medina", "direction": "Oui", "verification": "Vérifié", "date_inscription": "17/11/2025"}, {"nom": "DIENG", "prenom": "Tabara", "sexe": "Femme", "ville": "Beauvais", "telephone": "0761465807", "email": "tabou1619@gmail.com", "annee_arrivee": "2019", "statut": "Professionnel", "specialite": "Eau et Assainissement", "quartier": "Escale", "direction": "Non", "verification": "Vérifié", "date_inscription": "23/11/2025"}, {"nom": "DIENG", "prenom": "Papa", "sexe": "Homme", "ville": "Strasbourg", "telephone": "0745059018", "email": "papadieng@hotmail.fr", "annee_arrivee": "2019", "statut": "Professionnel", "specialite": "Juriste", "quartier": "Medina", "direction": "Non", "verification": "Non vérifié", "date_inscription": "25/11/2025"}, {"nom": "Diop", "prenom": "Serigne Saliou", "sexe": "Homme", "ville": "Vitry Sur Seine", "telephone": "0749363694", "email": "ssdiop2022@gmail.com", "annee_arrivee": "2022", "statut": "Étudiant", "specialite": "Logistique transport", "quartier": "Escale", "direction": "Oui", "verification": "Vérifié", "date_inscription": "14/12/2025"}, {"nom": "DIOP", "prenom": "Babacar", "sexe": "Homme", "ville": "Courbevoie", "telephone": "0783170963", "email": "bdiop8050@gmail.com", "annee_arrivee": "2018", "statut": "Professionnel", "specialite": "Management des entreprises et commerce international", "quartier": "Ndakhar Syll", "direction": "Oui", "verification": "Vérifié", "date_inscription": "24/11/2025"}, {"nom": "DIOP", "prenom": "Babacar", "sexe": "Homme", "ville": "Biot", "telephone": "0660023202", "email": "bdiop68@gmail.com", "annee_arrivee": "2017", "statut": "Professionnel", "specialite": "Développeur", "quartier": "Galla", "direction": "Non", "verification": "Vérifié", "date_inscription": "24/11/2025"}, {"nom": "DIOP", "prenom": "Aliou", "sexe": "Homme", "ville": "Montpellier", "telephone": "0754197379", "email": "aliounediop2019@hotmail.com", "annee_arrivee": "2017", "statut": "Professionnel", "specialite": "Demande d'asile", "quartier": "Darou Salam", "direction": "Non", "verification": "Vérifié", "date_inscription": "01/12/2025"}, {"nom": "DIOP", "prenom": "Mame Tening", "sexe": "Femme", "ville": "Rambouillet", "telephone": "0765270490", "email": "mameteningdiop@gmail.com", "annee_arrivee": "2021", "statut": "Professionnel", "specialite": "Manager", "quartier": "Medina", "direction": "Oui", "verification": "Vérifié", "date_inscription": "07/12/2025"}, {"nom": "DIOP", "prenom": "Ibrahima", "sexe": "Homme", "ville": "Arpajon", "telephone": "768729107", "email": "diop035@gmail.com", "annee_arrivee": "2018", "statut": "Professionnel", "specialite": "Ingénieur en Informatique", "quartier": "Médina", "direction": "Oui", "verification": "Vérifié", "date_inscription": "25/01/2026"}, {"nom": "DIOP", "prenom": "Mor", "sexe": "Homme", "ville": "Poissy", "telephone": "0783296232", "email": "mordiop177@gmail.com", "annee_arrivee": "2014", "statut": "Professionnel", "specialite": "Ingénieur Génie Électrique", "quartier": "Escale", "direction": "Oui", "verification": "Vérifié", "date_inscription": "06/11/2025"}, {"nom": "DIOP", "prenom": "Elhadj", "sexe": "Homme", "ville": "Arras", "telephone": "0611293553", "email": "emdiop10@gmail.com", "annee_arrivee": "2010", "statut": "Professionnel", "specialite": "Métallurgie", "quartier": "Escale", "direction": "Oui", "verification": "Vérifié", "date_inscription": "08/11/2025"}, {"nom": "FALL", "prenom": "Mbaye Ababacar", "sexe": "Homme", "ville": "La Ville Du Bois", "telephone": "0767823442", "email": "ababacarmbayefall92@gmail.com", "annee_arrivee": "2021", "statut": "Professionnel", "specialite": "Géographie-Aménagement", "quartier": "Diamagueune", "direction": "Non", "verification": "Vérifié", "date_inscription": "25/11/2025"}, {"nom": "FAYE", "prenom": "ELHADJI CISSE", "sexe": "Homme", "ville": "Orleans", "telephone": "0773040034", "email": "cissefaye@hotmail.fr", "annee_arrivee": "2020", "statut": "Professionnel", "specialite": "Data science / statistiques", "quartier": "Galla", "direction": "Non", "verification": "Vérifié", "date_inscription": "26/11/2025"}, {"nom": "GUEYE", "prenom": "Issa", "sexe": "Homme", "ville": "Brunoy", "telephone": "0667162187", "email": "gueyeissa@gmail.com", "annee_arrivee": "2007", "statut": "Professionnel", "specialite": "Professeur en Génie mécanique", "quartier": "Mbabou", "direction": "Oui", "verification": "Vérifié", "date_inscription": "16/11/2025"}, {"nom": "GUEYE", "prenom": "Fallou", "sexe": "Homme", "ville": "Marseille", "telephone": "0753651038", "email": "fallougueye19@hotmail.fr", "annee_arrivee": "2014", "statut": "Professionnel", "specialite": "Banquier", "quartier": "Medina", "direction": "Non", "verification": "Vérifié", "date_inscription": "30/11/2025"}, {"nom": "Guisse", "prenom": "Sokhna diarra", "sexe": "Femme", "ville": "Lille", "telephone": "0767022002", "email": "guissediarra96@gmail.com", "annee_arrivee": "2017", "statut": "Professionnel", "specialite": "Data analyst", "quartier": "Medina", "direction": "Oui", "verification": "Vérifié", "date_inscription": "30/11/2025"}, {"nom": "Hane", "prenom": "Modou", "sexe": "Homme", "ville": "La Rochelle", "telephone": "0652399158", "email": "modouhane1997@gmail.com", "annee_arrivee": "2021", "statut": "Étudiant", "specialite": "Agroalimentaire", "quartier": "Diamagueune", "direction": "Non", "verification": "Vérifié", "date_inscription": "13/12/2025"}, {"nom": "KEBE", "prenom": "Mamadou Sarr", "sexe": "Homme", "ville": "Marseille", "telephone": "0605830470", "email": "sarrkebe5@gmail.com", "annee_arrivee": "2015", "statut": "Professionnel", "specialite": "Directeur adjoint société Sécurité privée", "quartier": "Mbabou", "direction": "Oui", "verification": "Vérifié", "date_inscription": "09/11/2025"}, {"nom": "KEBE", "prenom": "Mohamed", "sexe": "Homme", "ville": "Livry-Gargan", "telephone": "0781467450", "email": "mohamedkebe54@gmail.com", "annee_arrivee": "2014", "statut": "Professionnel", "specialite": "Ingénierie électrique", "quartier": "Médina", "direction": "Oui", "verification": "Vérifié", "date_inscription": "23/11/2025"}, {"nom": "KEBE", "prenom": "Mbayang", "sexe": "Femme", "ville": "Paris", "telephone": "0752213100", "email": "mbayangkebe94@gmail.com", "annee_arrivee": "2018", "statut": "Autre", "specialite": "Développement informatique / chefferie de projet", "quartier": "Mbabou", "direction": "Non", "verification": "Vérifié", "date_inscription": "24/11/2025"}, {"nom": "KEBE", "prenom": "Papa Amadou khoury", "sexe": "Homme", "ville": "Massy", "telephone": "0751925556", "email": "kebepapaamadou@gmail.com", "annee_arrivee": "2018", "statut": "Professionnel", "specialite": "Supply Chain / Demand & Supply Planner", "quartier": "Médina", "direction": "Non", "verification": "Vérifié", "date_inscription": "24/11/2025"}, {"nom": "KEBE", "prenom": "Fatou", "sexe": "Femme", "ville": "Fampoux", "telephone": "0629613165", "email": "fatoumbackekebe@gmail.com", "annee_arrivee": "2017", "statut": "Professionnel", "specialite": "Ingenieur logiciel", "quartier": "Medina", "direction": "Non", "verification": "Vérifié", "date_inscription": "01/12/2025"}, {"nom": "KEBE", "prenom": "Alassane", "sexe": "Homme", "ville": "Meaux", "telephone": "0604553750", "email": "akebe2929@gmail.com", "annee_arrivee": "2023", "statut": "Professionnel", "specialite": "Ingénieur génie civil", "quartier": "Escale", "direction": "Non", "verification": "Vérifié", "date_inscription": "08/12/2025"}, {"nom": "KHOUMA", "prenom": "Bamba", "sexe": "Homme", "ville": "Vitry Sur Seine", "telephone": "0659287928", "email": "bambasougoukhouma@gmail.com", "annee_arrivee": "2019", "statut": "Professionnel", "specialite": "Agent Maîtrise", "quartier": "Escale", "direction": "Oui", "verification": "Vérifié", "date_inscription": "24/11/2025"}, {"nom": "MBENGUE", "prenom": "Mouhamadou", "sexe": "Homme", "ville": "Le Blanc Mesnil", "telephone": "0624796900", "email": "modou813@gmail.com", "annee_arrivee": "2018", "statut": "Professionnel", "specialite": "Statisticien-Econometre", "quartier": "Galla", "direction": "Oui", "verification": "Vérifié", "date_inscription": "07/12/2025"}, {"nom": "NDIAYE", "prenom": "Saliou", "sexe": "Homme", "ville": "Strasbourg", "telephone": "0637743612", "email": "saliounafy@gmail.com", "annee_arrivee": "2013", "statut": "Professionnel", "specialite": "Responsable commercial", "quartier": "Escale", "direction": "Oui", "verification": "Vérifié", "date_inscription": "16/11/2025"}, {"nom": "NIANG", "prenom": "Saye", "sexe": "Femme", "ville": "Nancy", "telephone": "0758258967", "email": "saye.niang023@gmail.com", "annee_arrivee": "2019", "statut": "Professionnel", "specialite": "Doctorante en chimie", "quartier": "Galla", "direction": "Oui", "verification": "Vérifié", "date_inscription": "08/11/2025"}, {"nom": "SECK", "prenom": "Antou", "sexe": "Homme", "ville": "Gif Sur Yvette", "telephone": "0783070274", "email": "antouthiateseck@gmail.com", "annee_arrivee": "2019", "statut": "Professionnel", "specialite": "Agent ferroviaire", "quartier": "Medina", "direction": "Oui", "verification": "Vérifié", "date_inscription": "09/11/2025"}, {"nom": "SECK", "prenom": "Dame", "sexe": "Homme", "ville": "Cachan", "telephone": "0783878430", "email": "seck-dame@hotmail.fr", "annee_arrivee": "2014", "statut": "Professionnel", "specialite": "Data engineer", "quartier": "Médina", "direction": "Non", "verification": "Vérifié", "date_inscription": "26/11/2025"}, {"nom": "SYLL", "prenom": "Ndeye Fatou", "sexe": "Femme", "ville": "Marseille", "telephone": "0766264462", "email": "ndeyefatousyll122@gmail.com", "annee_arrivee": "2021", "statut": "Étudiant", "specialite": "Génie électrique", "quartier": "Escale", "direction": "Oui", "verification": "Vérifié", "date_inscription": "01/12/2025"}, {"nom": "SYLL", "prenom": "Ibrahima", "sexe": "Homme", "ville": "Arras", "telephone": "0638542701", "email": "syll.ibrahima@gmail.com", "annee_arrivee": "2011", "statut": "Professionnel", "specialite": "Juriste marchés publics", "quartier": "Escale", "direction": "Oui", "verification": "Vérifié", "date_inscription": "06/11/2025"}, {"nom": "SYLL", "prenom": "Fallou", "sexe": "Homme", "ville": "Neuilly Sur Marne", "telephone": "0751215130", "email": "fallousyll24@gmail.com", "annee_arrivee": "2020", "statut": "Professionnel", "specialite": "Comptable", "quartier": "Escale", "direction": "Oui", "verification": "Vérifié", "date_inscription": "24/11/2025"}, {"nom": "THIAM", "prenom": "Massamba", "sexe": "Homme", "ville": "Paris", "telephone": "0650778846", "email": "massambathiam1992@gmail.com", "annee_arrivee": "2016", "statut": "Professionnel", "specialite": "Informatique", "quartier": "Diamaguene", "direction": "Oui", "verification": "Vérifié", "date_inscription": "25/11/2025"}];
-let T = [{"id": "1301202600001", "activite": "Tableau de bord de suivi des activités", "commission": "Secrétariat", "responsable": "Ibrahima et Mamadou", "date_debut": "13/01/2026", "date_fin": "17/01/2026", "statut": "Terminée", "relance": "", "priorite": "Moyenne", "commentaires": "A voir avec bureau"}, {"id": "1301202600002", "activite": "Préparation des documents officiels (RRI, Statuts)", "commission": "Secrétariat", "responsable": "Ibrahima, Pape Dieng et Mamadou", "date_debut": "13/01/2026", "date_fin": "17/01/2026", "statut": "Terminée", "relance": "", "priorite": "Haute", "commentaires": "Documents en relecture par Ibou et Pape Dieng"}, {"id": "1301202600003", "activite": "Faire un rappel de cotisations dans le groupe WhatsApp", "commission": "Trésorerie", "responsable": "Fallou et Issa", "date_debut": "13/01/2026", "date_fin": "17/01/2026", "statut": "Terminée", "relance": "", "priorite": "Moyenne", "commentaires": "Relance à faire le 14/01"}, {"id": "1301202600004", "activite": "Envoyer convocation officielle AG", "commission": "Secrétariat", "responsable": "Ibrahima et Mamadou", "date_debut": "18/01/2026", "date_fin": "20/01/2026", "statut": "Terminée", "relance": "", "priorite": "Moyenne", "commentaires": ""}, {"id": "1301202600005", "activite": "Faire le sondage pour la date de l'AG", "commission": "Secrétariat", "responsable": "Ibrahima et Mamadou", "date_debut": "14/01/2026", "date_fin": "15/01/2026", "statut": "Terminée", "relance": "", "priorite": "Haute", "commentaires": "Mettre un sondage dans le groupe whatsApp afin de determiner la date de l'AG (21 ou 25 janvier)"}, {"id": "1301202600006", "activite": "Rappel des attendues de la reunion du 1er mars", "commission": "Présidence", "responsable": "Mor et Saye", "date_debut": "17/02/2026", "date_fin": "22/02/2026", "statut": "En cours", "relance": "", "priorite": "Haute", "commentaires": ""}];
+let M = [];
+let T = [];
 
 const GEO = {"Compiegne": [49.4134, 2.8235], "Beauchamp": [49.0147, 2.1947], "Le Mans": [48.0061, 0.1996], "Le Blanc Mesnil": [48.9378, 2.4628], "Arras": [50.2919, 2.781], "Beauvais": [49.4295, 2.0825], "Strasbourg": [48.5734, 7.7521], "Courbevoie": [48.8975, 2.2535], "Biot": [43.6261, 7.0967], "Montpellier": [43.6117, 3.8777], "Rambouillet": [48.6454, 1.8305], "Vitry Sur Seine": [48.7876, 2.3928], "Arpajon": [48.5906, 2.2453], "Poissy": [48.9297, 2.0467], "La Ville Du Bois": [48.6483, 2.2758], "Orleans": [47.9029, 1.9092], "Brunoy": [48.6969, 2.4942], "Marseille": [43.2965, 5.3698], "Lille": [50.6292, 3.0573], "La Rochelle": [46.1603, -1.1511], "Livry-Gargan": [48.9175, 2.5333], "Paris": [48.8566, 2.3522], "Massy": [48.7257, 2.2725], "Fampoux": [50.3167, 2.8667], "Meaux": [48.9607, 2.8878], "Nancy": [48.6921, 6.1844], "Gif Sur Yvette": [48.6833, 2.1333], "Cachan": [48.7942, 2.3333], "Neuilly Sur Marne": [48.8556, 2.5522]};
 function gc(v){if(!v)return null;const k=v.trim();if(GEO[k])return GEO[k];const l=k.toLowerCase();for(const[n,c]of Object.entries(GEO)){if(n.toLowerCase().includes(l)||l.includes(n.toLowerCase()))return c;}return null;}
 
 // ═══════════════════════════════════════════════════════════════════
-// SYNC DEPUIS GOOGLE SHEETS (lecture CSV public — aucun script requis)
+// CONVERSION SUPABASE → FORMAT INTERNE
 // ═══════════════════════════════════════════════════════════════════
-function csvURL(id, sheet){
-  return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheet)}`;
-}
+const STATUT_MAP = {1:'Professionnel', 2:'Étudiant', 3:'Autre'};
+const SEXE_MAP   = {1:'Homme', 2:'Femme'};
 
-function parseCSV(txt){
-  const lines = txt.trim().split('\n');
-  if(lines.length < 2) return [];
-  const headers = splitCSVLine(lines[0]);
-  return lines.slice(1).map(l => {
-    const vals = splitCSVLine(l);
-    const obj = {};
-    headers.forEach((h,i) => obj[h] = (vals[i]||'').trim());
-    return obj;
-  }).filter(r => Object.values(r).some(v => v));
-}
-
-function splitCSVLine(line){
-  const res = []; let cur = '', inQ = false;
-  for(let i=0;i<line.length;i++){
-    const c = line[i];
-    if(c==='"'){inQ=!inQ;}
-    else if(c===','&&!inQ){res.push(cur);cur='';}
-    else cur+=c;
+function sbRowToMembre(r){
+  function fmtDate(d){
+    if(!d)return '';
+    const dt=new Date(d);
+    if(isNaN(dt))return d;
+    return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();
   }
-  res.push(cur);
-  return res;
-}
-
-function mapMembre(r){
-  // Colonnes: Nom, Prénom, Sexe, Ville, Téléphone, E-mail,
-  //           Année d'arrivée, Statut, Spécialité, Présentation,
-  //           Quartier, Direction, Code, Statut, Date inscription
   return {
-    nom:           r['Nom']||'',
-    prenom:        r['Prénom']||'',
-    sexe:          r['Sexe']||'Homme',
-    ville:         r['Ville']||'',
-    telephone:     r['Téléphone']||'',
-    email:         r['E-mail']||r['Email']||'',
-    annee_arrivee: r["Année d'arrivée"]||'',
-    statut:        r['Statut']||'Autre',
-    specialite:    r['Spécialité']||'',
-    presentation:  r['Présentation']||'',
-    quartier:      r['Quartier']||'',
-    direction:     r['Direction']||'Non',
-    verification:  r['Vérification']||r['Code']||'Non vérifié',
-    date_inscription: r['Date inscription']||'',
+    _id:            r.id,
+    nom:            r.nom||'',
+    prenom:         r.prenom||'',
+    sexe:           SEXE_MAP[r.sexe_id]||'Homme',
+    ville:          r.ville||'',
+    telephone:      r.telephone||'',
+    email:          r.email||'',
+    annee_arrivee:  r.annee_arrivee?String(r.annee_arrivee):'',
+    statut:         STATUT_MAP[r.statut_id]||'Autre',
+    specialite:     r.specialite||'',
+    presentation:   r.presentation||'',
+    quartier:       r.quartier||'',
+    direction:      r.direction||'Non',
+    verification:   r.verification||'Non vérifié',
+    date_inscription: fmtDate(r.date_inscription),
   };
 }
 
-function mapTache(r){
-  // Colonnes: ID Activité, Activité / Projet, Commission, Responsable,
-  //           Date début, Date fin prévue, Statut, Relance, Priorité,
-  //           Commentaires / État d'avancement
-  function fmtDate(v){
-    if(!v)return '';
-    // Si format Date Google (ex: 1/13/2026 → dd/mm/yyyy)
-    const d = new Date(v);
-    if(!isNaN(d)) return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-    return v;
+function sbRowToTache(r){
+  function fmtDate(d){
+    if(!d)return '';
+    const dt=new Date(d);
+    if(isNaN(dt))return d;
+    return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'/'+dt.getFullYear();
   }
   return {
-    id:           r['ID Activité']||'',
-    activite:     r['Activité / Projet']||'',
-    commission:   r['Commission']||'',
-    responsable:  r['Responsable']||'',
-    date_debut:   fmtDate(r['Date début']),
-    date_fin:     fmtDate(r['Date fin prévue']),
-    statut:       r['Statut']||'À faire',
-    relance:      r['Relance']||'',
-    priorite:     r['Priorité']||'Moyenne',
-    commentaires: r["Commentaires / État d'avancement"]||'',
+    _id:          r.id,
+    id:           r.id_activite||'',
+    activite:     r.activite||'',
+    commission:   r.commission||'',
+    responsable:  r.responsable||'',
+    date_debut:   fmtDate(r.date_debut),
+    date_fin:     fmtDate(r.date_fin),
+    statut:       r.statut||'À faire',
+    relance:      r.relance||'',
+    priorite:     r.priorite||'Moyenne',
+    commentaires: r.commentaires||'',
   };
 }
 
-async function syncData(){
+// ═══════════════════════════════════════════════════════════════════
+// CHARGEMENT DEPUIS SUPABASE
+// ═══════════════════════════════════════════════════════════════════
+async function loadFromSupabase(){
   const btn = g('sync-btn');
-  btn.disabled = true; btn.textContent = '⏳ Synchronisation…';
+  btn.disabled = true; btn.textContent = '⏳ Chargement…';
   g('ldov').classList.remove('hide');
-  g('ldtxt').textContent = 'Chargement depuis Google Sheets…';
+  g('ldtxt').textContent = 'Chargement depuis Supabase…';
 
   let okM = false, okT = false;
-  try {
-    const respM = await fetch(csvURL(CFG.membres.id, CFG.membres.sheet));
-    if(respM.ok){
-      const raw = parseCSV(await respM.text());
-      const mapped = raw.map(mapMembre).filter(m => m.nom);
-      if(mapped.length){ M = mapped; okM = true; }
-    }
-  } catch(e){ console.warn('Membres sync error:', e); }
 
   try {
-    const respT = await fetch(csvURL(CFG.taches.id, CFG.taches.sheet));
-    if(respT.ok){
-      const raw = parseCSV(await respT.text());
-      const mapped = raw.map(mapTache).filter(t => t.activite);
-      if(mapped.length){ T = mapped; okT = true; }
-    }
-  } catch(e){ console.warn('Tâches sync error:', e); }
+    const {data, error} = await _sb.from('inscrits').select('*').order('nom');
+    if(!error && data){
+      M = data.map(sbRowToMembre).filter(m => m.nom);
+      okM = true;
+    } else { console.warn('Supabase membres:', error?.message); }
+  } catch(e){ console.warn('Membres load error:', e); }
+
+  try {
+    const {data, error} = await _sb.from('taches').select('*').order('activite');
+    if(!error && data){
+      T = data.map(sbRowToTache).filter(t => t.activite);
+      okT = true;
+    } else { console.warn('Supabase tâches:', error?.message); }
+  } catch(e){ console.warn('Tâches load error:', e); }
 
   g('ldov').classList.add('hide');
   btn.disabled = false;
 
   if(okM || okT){
-    btn.textContent = '✅ Synchronisé';
+    btn.textContent = '✅ Actualisé';
     toast(`✅ ${okM ? M.length+' membres' : ''} ${okM&&okT?'·':''} ${okT ? T.length+' tâches' : ''} chargés`, '#0e7a45');
-    g('sfoot').textContent = 'Sync Google Sheets · ' + new Date().toLocaleTimeString('fr-FR');
+    g('sfoot').textContent = 'Supabase · ' + new Date().toLocaleTimeString('fr-FR');
   } else {
-    btn.textContent = '⚠️ Échec (données locales)';
-    toast('⚠️ Google Sheets inaccessible — données locales utilisées', '#b07d0a');
+    btn.textContent = '⚠️ Erreur Supabase';
+    toast('⚠️ Impossible de joindre Supabase', '#c0392b');
   }
-  setTimeout(() => { btn.textContent = '🔄 Synchroniser Sheets'; }, 4000);
-
+  setTimeout(() => { btn.textContent = '🔄 Actualiser données'; }, 4000);
   refreshAll();
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // ÉTAT & UTILITAIRES
 // ═══════════════════════════════════════════════════════════════════
 let fM=[], fM2=[], fT=[];
@@ -1711,40 +1675,53 @@ function expCSV(type){
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// INIT
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT — chargement depuis Supabase
 // ═══════════════════════════════════════════════════════════════════
 (async function init(){
   g('ldov').classList.remove('hide');
-  g('ldtxt').textContent = 'Chargement des données…';
+  g('ldtxt').textContent = 'Connexion à Supabase…';
 
-  // Tentative de sync Google Sheets
-  let synced = false;
+  let okM = false, okT = false;
+
   try {
-    const [respM, respT] = await Promise.all([
-      fetch(csvURL(CFG.membres.id, CFG.membres.sheet)),
-      fetch(csvURL(CFG.taches.id, CFG.taches.sheet))
-    ]);
-    if(respM.ok){
-      const raw=parseCSV(await respM.text());
-      const mapped=raw.map(mapMembre).filter(m=>m.nom);
-      if(mapped.length){ M=mapped; synced=true; }
+    const {data, error} = await _sb.from('inscrits').select('*').order('nom');
+    if(!error && data){ M = data.map(sbRowToMembre).filter(m => m.nom); okM = true; }
+    else console.warn('Supabase membres init:', error?.message);
+  } catch(e){ console.warn('Init membres error:', e); }
+
+  try {
+    const {data, error} = await _sb.from('taches').select('*').order('activite');
+    if(!error && data){ T = data.map(sbRowToTache).filter(t => t.activite); okT = true; }
+    else console.warn('Supabase tâches init:', error?.message);
+  } catch(e){ console.warn('Init tâches error:', e); }
+
+  // Charger CR depuis Supabase
+  try {
+    const {data, error} = await _sb.from('comptes_rendus').select('*').order('updated_at', {ascending:false}).limit(1);
+    if(!error && data && data.length){
+      const cr = data[0];
+      if(cr.contenu_html && g('cr-content')){
+        g('cr-content').innerHTML = cr.contenu_html;
+        // Réattacher drag & drop
+        g('cr-content').querySelectorAll('.cr-section').forEach(crMakeDraggable);
+        g('cr-content').querySelectorAll('h3').forEach(h=>{h.classList.add('cr-draggable');h.setAttribute('draggable','true');crMakeDraggable(h);});
+      }
     }
-    if(respT.ok){
-      const raw=parseCSV(await respT.text());
-      const mapped=raw.map(mapTache).filter(t=>t.activite);
-      if(mapped.length){ T=mapped; synced=true; }
-    }
-  } catch(e){ console.warn('Init sync failed, using local data'); }
+  } catch(e){ console.warn('Init CR error:', e); }
 
   g('ldov').classList.add('hide');
-  g('sfoot').textContent = synced
-    ? 'Google Sheets · '+new Date().toLocaleTimeString('fr-FR')
-    : 'Données locales · '+new Date().toLocaleDateString('fr-FR');
+  g('sfoot').textContent = (okM||okT)
+    ? 'Supabase · '+new Date().toLocaleTimeString('fr-FR')
+    : '⚠️ Hors ligne · '+new Date().toLocaleDateString('fr-FR');
 
   refreshAll();
   initMap();
 
-  if(synced) toast(`✅ ${M.length} membres · ${T.length} tâches chargés`, '#0e7a45');
+  if(okM||okT) toast(`✅ ${M.length} membres · ${T.length} tâches chargés depuis Supabase`, '#0e7a45');
+  else toast('⚠️ Connexion Supabase échouée', '#c0392b');
+
   // Init drag & drop CR
   document.querySelectorAll('.cr-section').forEach(crMakeDraggable);
   document.querySelectorAll('#cr-content h3').forEach(h=>{h.classList.add('cr-draggable');h.setAttribute('draggable','true');crMakeDraggable(h);});
