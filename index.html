@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AKF · Association des Kébémerois de France</title>
 
-  <!-- Fonts -->
-  https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&family=DM+Sans:wght@300;400;600&display=swap
+  <!-- Fonts (chargées correctement, ne s'affichent pas en texte) -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&family=DM+Sans:wght@300;400=swap
 
   <!-- Supabase & EmailJS -->
   https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2</script>
@@ -18,20 +18,13 @@
       --akf-jaune:#FDEF42;
       --akf-rouge:#E31B23;
       --akf-bleu:#1E40AF;
-      --ink:#0f172a;
-      --mut:#64748b;
-      --bg:#f3f4f6;
-      --wh:#fff;
-      --r:14px;
-      --sh:0 6px 24px rgba(0,0,0,.08);
+      --ink:#0f172a; --mut:#64748b; --bg:#f3f4f6; --wh:#fff;
+      --r:14px; --sh:0 6px 24px rgba(0,0,0,.08);
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;background:var(--bg);
-      color:var(--ink);font-family:"DM Sans",system-ui,Arial
-    }
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,Arial}
 
-    /* ===== HERO PREMIUM ===== */
+    /* ===== HERO ===== */
     .hero{
       position:relative;
       background:
@@ -51,164 +44,160 @@
       display:flex;align-items:center;justify-content:center;
     }
     .logo-box img{
-      display:block;height:110px;width:auto;border-radius:10px;
-      image-rendering: -webkit-optimize-contrast;
+      display:block;height:110px;width:auto;border-radius:10px;user-select:none;-webkit-user-drag:none;
+      image-rendering:-webkit-optimize-contrast;
     }
     .hero-text{flex:1;min-width:260px}
     .hero-title{
-      font-family:"Montserrat",sans-serif;
-      font-weight:800;line-height:1.1;margin:0 0 10px;
-      font-size:clamp(1.8rem, 3vw, 2.4rem);
-      color:var(--akf-vert);
+      font-family:"Montserrat",sans-serif;font-weight:800;line-height:1.1;margin:0 0 10px;
+      font-size:clamp(1.8rem, 3vw, 2.4rem);color:var(--akf-vert);
     }
-    .hero-sub{
-      color:var(--mut);
-      font-size:clamp(.98rem,1.6vw,1.05rem);
-      margin:0;
-    }
+    .hero-sub{color:var(--mut);font-size:clamp(.98rem,1.6vw,1.05rem);margin:0}
 
-    /* ===== NAV SOCIAL TABS ===== */
-    .tabs{
-      max-width:1100px;margin:14px auto 0;display:flex;gap:10px;flex-wrap:wrap;padding:0 16px;
-    }
+    /* ===== SOCIAL TABS (icônes cliquables, pas d'URL en clair) ===== */
+    .tabs{max-width:1100px;margin:14px auto 0;display:flex;gap:10px;flex-wrap:wrap;padding:0 16px}
     .tab{
-      display:flex;align-items:center;gap:10px;
-      padding:10px 14px;border-radius:12px;background:var(--wh);box-shadow:var(--sh);
-      text-decoration:none;color:var(--ink);font-weight:700;font-size:.96rem;
-      border:2px solid transparent;transition:all .2s;
+      display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--wh);box-shadow:var(--sh);
+      text-decoration:none;color:var(--ink);font-weight:700;font-size:.96rem;border:2px solid transparent;transition:all .2s
     }
     .tab:hover{transform:translateY(-1px);border-color:var(--akf-bleu)}
     .chip{font-size:.7rem;font-weight:800;padding:3px 8px;border-radius:999px;color:#fff}
-    .chip.ig{background:#E4405F}
-    .chip.tk{background:#000}
-    .chip.fb{background:#1877F2}
+    .chip.ig{background:#E4405F}.chip.tk{background:#000}.chip.fb{background:#1877F2}
 
-    /* ===== SECTIONS ===== */
+    /* ===== SECTION / CARDS ===== */
     .section{max-width:1100px;margin:18px auto;padding:0 16px}
-    .card{
-      background:var(--wh);border-radius:var(--r);box-shadow:var(--sh);padding:22px;
-    }
-    .grid{
-      display:grid;gap:16px;
-      grid-template-columns:repeat(12,1fr);
-    }
-    .col-6{grid-column:span 6}
-    .col-12{grid-column:span 12}
-    @media(max-width:920px){.col-6{grid-column:span 12}}
+    .card{background:var(--wh);border-radius:var(--r);box-shadow:var(--sh);padding:22px}
+    h2{margin:0 0 12px;font-family:"Montserrat",sans-serif;color:var(--akf-bleu);font-size:1.4rem}
+    ul{margin:0 0 6px 18px} li{margin:.3rem 0}
 
-    h2{
-      margin:0 0 16px;font-family:"Montserrat",sans-serif;color:var(--akf-bleu);font-size:1.4rem
+    /* ===== ACCORDION ===== */
+    .accordion{display:grid;gap:14px}
+    details{
+      background:var(--wh);border-radius:12px;box-shadow:var(--sh);overflow:hidden
     }
-    ul{margin:0 0 6px 18px}
-    li{margin:.3rem 0}
+    summary{
+      list-style:none;cursor:pointer;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;
+      font-weight:800;color:var(--ink);border-left:6px solid var(--akf-vert)
+    }
+    summary::-webkit-details-marker{display:none}
+    .acc-body{padding:18px;border-top:1px solid #e5e7eb}
 
-    /* ===== FORMS ===== */
+    /* ===== FORM ===== */
     label{font-weight:700;font-size:.92rem;color:var(--mut);display:block;margin:8px 0 6px}
     input,select,textarea{
-      width:100%;border:1.6px solid #e2e8f0;background:#f8fafc;
-      border-radius:10px;padding:12px 12px;font-size:1rem;outline:none;transition:border .15s
+      width:100%;border:1.6px solid #e2e8f0;background:#f8fafc;border-radius:10px;padding:12px;font-size:1rem;outline:none;transition:border .15s
     }
     input:focus,select:focus,textarea:focus{border-color:var(--akf-vert);background:#fff}
+    .row{display:flex;gap:10px;flex-wrap:wrap}.two>*{flex:1 1 260px}
+
+    /* ===== BUTTONS ===== */
     .btn{
-      appearance:none;border:none;border-radius:10px;padding:12px 18px;
-      font-weight:800;cursor:pointer;color:#fff;background:var(--akf-vert);
+      appearance:none;border:none;border-radius:10px;padding:12px 18px;font-weight:800;cursor:pointer;color:#fff;background:var(--akf-vert);
       box-shadow:0 6px 18px rgba(0,133,63,.18);transition:transform .1s,filter .2s
     }
-    .btn:hover{filter:brightness(.96)}
-    .btn:active{transform:translateY(1px)}
+    .btn:hover{filter:brightness(.96)} .btn:active{transform:translateY(1px)}
     .btn.alt{background:var(--akf-bleu);box-shadow:0 6px 18px rgba(30,64,175,.18)}
 
-    /* ===== ADMIN BTN ===== */
-    .admin{
-      position:fixed;top:12px;right:12px;z-index:50
-    }
+    /* ===== ADMIN MODAL ===== */
+    .admin-btn{position:fixed;top:12px;right:12px;z-index:50}
+    .ov{position:fixed;inset:0;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center;z-index:200}
+    .ov.open{display:flex}
+    .modal{background:#fff;border-radius:16px;box-shadow:var(--sh);width:min(420px, 92vw);padding:20px}
+    .modal h3{margin:0 0 8px;font-family:"Montserrat";color:var(--akf-bleu)}
+    .modal .actions{display:flex;gap:10px;justify-content:flex-end}
 
     /* ===== FOOTER ===== */
-    .footer{
-      margin:26px 0 40px; text-align:center;color:var(--mut);font-size:.9rem
-    }
-
-    /* Small helpers */
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .two > *{flex:1 1 260px}
+    .footer{margin:26px 0 40px;text-align:center;color:var(--mut);font-size:.9rem}
   </style>
 </head>
 <body>
 
-  <!-- ADMIN -->
-  <button class="btn alt admin" onclick="adminLogin()">Admin</button>
+  <!-- Bouton Admin (ouvre une vraie modale) -->
+  <button class="btn alt admin-btn" id="adminBtn" type="button">Admin</button>
+
+  <!-- ADMIN MODAL -->
+  <div class="ov" id="adminOv" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="admTitle">
+      <h3 id="admTitle">Accès administrateur</h3>
+      <p style="margin:0 0 12px;color:#4b5563">Veuillez saisir le mot de passe pour accéder au tableau de bord.</p>
+      <label for="admPwd">Mot de passe</label>
+      <input id="admPwd" type="password" placeholder="••••••••" autocomplete="current-password" />
+      <div class="actions">
+        <button class="btn" id="admEnter" type="button">Entrer</button>
+        <button class="btn alt" id="admClose" type="button">Annuler</button>
+      </div>
+    </div>
+  </div>
 
   <!-- HERO -->
   <section class="hero">
     <div class="hero-wrap">
       <div class="logo-box">
-        <!-- Logo : corrigé pour PC + mobile -->
+        <!-- LOGO en image, pas de lien -->
         https://i.postimg.cc/MG6xqtLp/8f8dd0a7_ae8f_4fbc_8820_8ada8583a6f8.jpg
       </div>
       <div class="hero-text">
         <h1 class="hero-title">Association des Kébémerois de France (AKF)</h1>
         <p class="hero-sub">
           Rassembler la communauté kébémeroise en France autour de l’entraide, la solidarité
-          et le partage culturel. Participez à nos événements, contribuez à nos projets
-          et renforcez les liens avec notre ville d’origine, Kébémer.
+          et le partage culturel. Participez à nos événements et renforcez les liens avec notre
+          ville d’origine, Kébémer.
         </p>
       </div>
     </div>
 
-    <!-- Onglets réseaux (pas en vrac) -->
+    <!-- Réseaux sociaux (boutons cliquables, aucune URL en clair) -->
     <div class="tabs">
       https://www.instagram.com/asso_kebemerois_de_france
-        <span class="chip ig">Instagram</span> <span>@asso_kebemerois_de_france</span>
+        <span class="chip ig">Instagram</span> <span>Suivre</span>
       </a>
-      https://www.tiktok.com/@akf.asso.kbmrois
-        <span class="chip tk">TikTok</span> <span>@akf.asso.kbmrois</span>
+      <a class="tab" href="https://www.tiktok.com/@akf.asso.kbmros="chip tk">TikTok</span> <span>Suivre</span>
       </a>
       https://www.facebook.com/profile.php?id=61588628498199
-        <span class="chip fb">Facebook</span> <span>Association AKF</span>
+        <span class="chip fb">Facebook</span> <span>Suivre</span>
       </a>
     </div>
   </section>
 
   <!-- CONTENU -->
   <main class="section">
-    <div class="grid">
-      <!-- Présentation -->
-      <div class="col-6">
-        <div class="card">
-          <h2>Notre mission</h2>
-          <p>L’AKF rassemble, accompagne et valorise les Kébémerois de France en :</p>
-          <ul>
-            <li>Favorisant l’entraide et la solidarité</li>
-            <li>Organisant des événements culturels et sociaux</li>
-            <li>Contribuant au développement de Kébémer</li>
-            <li>Préservant nos liens avec la terre natale</li>
-          </ul>
-        </div>
-      </div>
+    <!-- Mission -->
+    <div class="card" style="margin-bottom:16px">
+      <h2>Notre mission</h2>
+      <ul>
+        <li>Favoriser l’entraide et la solidarité entre membres</li>
+        <li>Organiser des événements culturels et sociaux</li>
+        <li>Contribuer au développement de Kébémer</li>
+        <li>Maintenir les liens avec notre ville d’origine</li>
+      </ul>
+    </div>
 
-      <!-- Contact -->
-      <div class="col-6">
-        <div class="card">
-          <h2>Contactez‑nous</h2>
-          <label>Votre nom</label>
-          <input id="c_nom" placeholder="Nom complet">
-
-          <label>Email ou téléphone</label>
-          <input id="c_contact" placeholder="Ex. nom@email.com · 07…">
-
+    <!-- Accordéons : fermés par défaut -->
+    <div class="accordion">
+      <!-- CONTACT -->
+      <details>
+        <summary>📩 Contactez‑nous</summary>
+        <div class="acc-body">
+          <div class="row two">
+            <div>
+              <label>Votre nom</label>
+              <input id="c_nom" placeholder="Nom complet">
+            </div>
+            <div>
+              <label>Email ou téléphone</label>
+              <input id="c_contact" placeholder="ex. nom@email.com · 07…">
+            </div>
+          </div>
           <label>Votre message</label>
           <textarea id="c_message" rows="5" placeholder="Écrivez votre message ici…"></textarea>
-
-          <div class="row">
-            <button class="btn" onclick="sendContact()">Envoyer</button>
-          </div>
+          <button class="btn" type="button" id="btnContact">Envoyer</button>
         </div>
-      </div>
+      </details>
 
-      <!-- Rejoignez-nous -->
-      <div class="col-12">
-        <div class="card">
-          <h2>Rejoignez‑nous</h2>
+      <!-- INSCRIPTION -->
+      <details>
+        <summary>🧭 Rejoignez‑nous</summary>
+        <div class="acc-body">
           <div class="row two">
             <div>
               <label>Nom *</label>
@@ -277,158 +266,147 @@
               <input id="i_date" type="date">
             </div>
             <div style="display:flex;align-items:flex-end">
-              <button class="btn" onclick="registerMember()">S’inscrire</button>
+              <button class="btn" type="button" id="btnRegister">S’inscrire</button>
             </div>
           </div>
         </div>
-      </div>
-
+      </details>
     </div>
+
     <div class="footer">
       © <span id="year"></span> AKF – Association des Kébémerois de France · Tous droits réservés
     </div>
   </main>
 
   <script>
-    // ============ CONFIG ============
+    // ===== Year
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Supabase
-    const supabase = supabasejs.createClient(
+    // ===== Supabase
+    const sb = supabase.createClient(
       "https://pbhqvmtepipmldfncths.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiaHF2bXRlcGlwbWxkZm5jdGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MjU3OTAsImV4cCI6MjA4MjAwMTc5MH0.M-0qndrCgH2r3TQDW4I_THvrEYe_nZx51kGKjiF4egg"
     );
 
-    // EmailJS
+    // ===== EmailJS
     emailjs.init("BWF1eL0t5Qzl_qHOx"); // Public Key
     const EMAILJS_SERVICE = "service_o1yk6zm";
-    const TEMPLATE_ADMIN  = "template_g1qttpk"; // vers l'association
-    const TEMPLATE_USER   = "template_kgf8jt9"; // vers l’utilisateur
+    const TEMPLATE_ADMIN  = "template_g1qttpk"; // à l'association
+    const TEMPLATE_USER   = "template_kgf8jt9"; // à l'utilisateur
 
-    // Outils
-    const $ = (id)=>document.getElementById(id);
-    const nowStr = ()=> new Date().toLocaleString('fr-FR',{
-      dateStyle:'long', timeStyle:'short'
+    // ===== Admin modal
+    const adminBtn  = document.getElementById('adminBtn');
+    const adminOv   = document.getElementById('adminOv');
+    const admPwdInp = document.getElementById('admPwd');
+    const admEnter  = document.getElementById('admEnter');
+    const admClose  = document.getElementById('admClose');
+
+    adminBtn.addEventListener('click', () => {
+      adminOv.classList.add('open');
+      admPwdInp.focus();
+    });
+    admClose.addEventListener('click', () => adminOv.classList.remove('open'));
+    adminOv.addEventListener('click', (e) => {
+      if(e.target === adminOv) adminOv.classList.remove('open');
+    });
+    admEnter.addEventListener('click', checkAdmin);
+    admPwdInp.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') checkAdmin();
+      if(e.key === 'Escape') adminOv.classList.remove('open');
     });
 
-    // ============ ADMIN ============
-
-    function adminLogin(){
-      const p = prompt("Mot de passe Admin :");
-      if(p === "@Kebemer25@"){ window.location.href = "index.html"; }
-      else if(p !== null){ alert("Mot de passe incorrect."); }
+    function checkAdmin(){
+      const pwd = admPwdInp.value;
+      if(pwd === "@Kebemer25@"){
+        window.location.href = "./index.html";
+      }else{
+        alert("Mot de passe incorrect.");
+        admPwdInp.focus();
+      }
     }
 
-    // ============ CONTACT ============
-
-    async function sendContact(){
-      const name = $("c_nom").value.trim();
-      const reply_to = $("c_contact").value.trim();
-      const message = $("c_message").value.trim();
+    // ===== Contact -> emails
+    document.getElementById('btnContact').addEventListener('click', async () => {
+      const name = document.getElementById('c_nom').value.trim();
+      const reply_to = document.getElementById('c_contact').value.trim();
+      const message = document.getElementById('c_message').value.trim();
 
       if(!name || !reply_to || !message){
         alert("Veuillez remplir tous les champs du formulaire de contact.");
         return;
       }
-
-      // 1) Email à l’association
+      // 1) Mail à l'association
       try{
         await emailjs.send(EMAILJS_SERVICE, TEMPLATE_ADMIN, {
-          name, reply_to, message, time: nowStr()
+          name, reply_to, message, time: new Date().toLocaleString('fr-FR')
         });
-      }catch(e){
-        console.warn("Email admin (contact) error:", e);
-      }
+      }catch(err){ console.warn('Email admin (contact) error:', err); }
 
-      // 2) Accusé de réception à l’utilisateur
+      // 2) Accusé à l'utilisateur
       try{
         await emailjs.send(EMAILJS_SERVICE, TEMPLATE_USER, {
           name, to_email: reply_to
         });
-      }catch(e){
-        console.warn("Email user (contact) error:", e);
-      }
+      }catch(err){ console.warn('Email user (contact) error:', err); }
 
-      alert("Message envoyé ! Merci, l’équipe AKF vous répondra rapidement.");
-      $("c_nom").value = $("c_contact").value = $("c_message").value = "";
-    }
+      alert("Message envoyé ! L’équipe AKF vous répondra rapidement.");
+      document.getElementById('c_nom').value = '';
+      document.getElementById('c_contact').value = '';
+      document.getElementById('c_message').value = '';
+    });
 
-    // ============ INSCRIPTION ============
+    // ===== Inscription -> supabase + emails
+    document.getElementById('btnRegister').addEventListener('click', async () => {
+      const nom = document.getElementById('i_nom').value.toUpperCase().trim();
+      const prenom = document.getElementById('i_prenom').value.trim();
+      if(!nom || !prenom){ alert("Nom et Prénom sont obligatoires."); return; }
 
-    async function registerMember(){
-      const nom = $("i_nom").value.toUpperCase().trim();
-      const prenom = $("i_prenom").value.trim();
-      if(!nom || !prenom){
-        alert("Nom et Prénom sont obligatoires.");
-        return;
-      }
+      const sexe_id = (document.getElementById('i_sexe').value === "Homme") ? 1 : 2;
+      const ville = document.getElementById('i_ville').value.trim();
+      const telephone = document.getElementById('i_telephone').value.trim();
+      const email = document.getElementById('i_email').value.trim();
+      const annee_arrivee = document.getElementById('i_annee').value || null;
+      const statutSel = document.getElementById('i_statut').value;
+      const statut_id = (statutSel === "Professionnel") ? 1 : (statutSel === "Étudiant" ? 2 : 3);
+      const specialite = document.getElementById('i_specialite').value.trim();
+      const quartier = document.getElementById('i_quartier').value.trim();
+      const date_inscription = document.getElementById('i_date').value || null;
 
-      const sexe_id = $("i_sexe").value === "Homme" ? 1 : 2; // lookup sexes_inscrits
-      const ville = $("i_ville").value.trim();
-      const telephone = $("i_telephone").value.trim();
-      const email = $("i_email").value.trim();
-      const annee_arrivee = $("i_annee").value || null;
-      const statut_id = (()=>{
-        const s = $("i_statut").value;
-        if(s === "Professionnel") return 1;
-        if(s === "Étudiant")     return 2;
-        return 3; // Autres
-      })();
-      const specialite = $("i_specialite").value.trim();
-      const quartier = $("i_quartier").value.trim();
-      const date_inscription = $("i_date").value || null;
-
-      // 1) Insertion Supabase
-      const { error } = await supabase
-        .from("inscrits")
+      // 1) Insert Supabase
+      const { error } = await sb
+        .from('inscrits')
         .insert([{
           nom, prenom, sexe_id, ville, telephone, email,
           annee_arrivee: annee_arrivee ? parseInt(annee_arrivee,10) : null,
-          statut_id, specialite, quartier,
-          date_inscription
+          statut_id, specialite, quartier, date_inscription
         }]);
 
-      if(error){
-        alert("Erreur Supabase : " + error.message);
-        return;
-      }
+      if(error){ alert("Erreur Supabase : " + error.message); return; }
 
-      // 2) Email à l’association (on réutilise TEMPLATE_ADMIN)
+      // 2) Email à l'association (on réutilise le template admin)
       try{
         await emailjs.send(EMAILJS_SERVICE, TEMPLATE_ADMIN, {
           name: `${nom} ${prenom}`,
-          email,
-          telephone,
-          ville,
-          statut: $("i_statut").value,
-          quartier,
-          specialite,
-          time: nowStr(),
-          message: "Nouvelle inscription via le site AKF."
+          email, telephone, ville,
+          statut: statutSel, quartier, specialite,
+          message: "Nouvelle inscription via le site AKF.",
+          time: new Date().toLocaleString('fr-FR')
         });
-      }catch(e){
-        console.warn("Email admin (inscription) error:", e);
-      }
+      }catch(err){ console.warn('Email admin (inscription) error:', err); }
 
-      // 3) Accusé à l’utilisateur (TEMPLATE_USER)
+      // 3) Accusé à l'utilisateur
       try{
         await emailjs.send(EMAILJS_SERVICE, TEMPLATE_USER, {
-          name: prenom,
-          to_email: email
+          name: prenom, to_email: email
         });
-      }catch(e){
-        console.warn("Email user (inscription) error:", e);
-      }
+      }catch(err){ console.warn('Email user (inscription) error:', err); }
 
       alert("Inscription enregistrée ! Bienvenue à l’AKF.");
-      // reset soft
       ["i_nom","i_prenom","i_ville","i_telephone","i_email","i_annee","i_specialite","i_quartier","i_date"]
-        .forEach(id=>{$(id).value="";});
-      $("i_sexe").value = "Homme";
-      $("i_statut").value = "Professionnel";
-    }
-
-    // ============ INIT ============
-    $("year").textContent = new Date().getFullYear();
+        .forEach(id => document.getElementById(id).value = '');
+      document.getElementById('i_sexe').value = 'Homme';
+      document.getElementById('i_statut').value = 'Professionnel';
+    });
   </script>
 </body>
 </html>
