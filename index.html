@@ -777,61 +777,9 @@ tbody td{padding:9px 12px;vertical-align:middle}
 
 <div class="tw-wrap" id="tw-wrap"></div>
 
-<script>
-// ═══════════════════════════════════════════════════════════════════
-// SUPABASE CONFIG
-// ═══════════════════════════════════════════════════════════════════
-const _sb = supabase.createClient(
-  'https://pbhqvmtepipmldfncths.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiaHF2bXRlcGlwbWxkZm5jdGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MjU3OTAsImV4cCI6MjA4MjAwMTc5MH0.M-0qndrCgH2r3TQDW4I_THvrEYe_nZx51kGKjiF4egg'
-);
-
-function _mToSB(m){
-  const s=m.statut||'Autre';
-  function dateSql(d){if(!d)return null;const p=d.split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:null;}
-  return{
-    nom:m.nom||'', prenom:m.prenom||'',
-    sexe_id:m.sexe==='Homme'?1:2,
-    ville:m.ville||'', telephone:m.telephone||'', email:m.email||'',
-    annee_arrivee:m.annee_arrivee?parseInt(m.annee_arrivee,10):null,
-    statut_id:s==='Professionnel'?1:s==='Étudiant'?2:3,
-    specialite:m.specialite||'', quartier:m.quartier||'',
-    date_inscription:dateSql(m.date_inscription)||null,
-  };
-}
-function _tToSB(t){
-  function dateSql(d){if(!d)return null;const p=d.split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:null;}
-  return{
-    id_activite:t.id||'', activite:t.activite||'',
-    commission:t.commission||'', responsable:t.responsable||'',
-    date_debut:dateSql(t.date_debut), date_fin:dateSql(t.date_fin),
-    statut:t.statut||'À faire', relance:t.relance||'',
-    priorite:t.priorite||'Moyenne', commentaires:t.commentaires||'',
-  };
-}
-async function sbIM(m){const{error}=await _sb.from('inscrits').insert([_mToSB(m)]);if(error)console.warn('SB insert membre:',error.message);return!error;}
-async function sbUM(m){const{error}=await _sb.from('inscrits').update(_mToSB(m)).eq('nom',m.nom).eq('prenom',m.prenom);if(error)console.warn('SB update membre:',error.message);return!error;}
-async function sbDM(nom,prenom){const{error}=await _sb.from('inscrits').delete().eq('nom',nom).eq('prenom',prenom);if(error)console.warn('SB delete membre:',error.message);return!error;}
-async function sbIT(t){const{error}=await _sb.from('taches').insert([_tToSB(t)]);if(error)console.warn('SB insert tâche:',error.message);return!error;}
-async function sbUT(t){const{error}=await _sb.from('taches').update(_tToSB(t)).eq('id_activite',t.id);if(error)console.warn('SB update tâche:',error.message);return!error;}
-async function sbDT(id){const{error}=await _sb.from('taches').delete().eq('id_activite',id);if(error)console.warn('SB delete tâche:',error.message);return!error;}
-
-// ─── CRUD CR ─────────────────────────────────────────────────────
-function printCR(){
-  const w=window.open('','_blank');
-  const c=g('cr-content').innerHTML;
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CR AKF</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
-  <style>body{font-family:'Aptos','Helvetica Neue',Arial,sans-serif;color:#333;padding:20px;max-width:900px;margin:0 auto}
-  h1,h2,h3{font-family:'Montserrat',sans-serif;color:#1E40AF}
-  table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:10px}
-  th{background:#1E40AF;color:#fff}.cr-section{margin-bottom:24px}</style></head><body>${c}
 </div><!-- /page-admin -->
 
-
-<!-- ══════════════════════════════════════════════════════
-     SCRIPTS
-══════════════════════════════════════════════════════ -->
+<!-- ══ SCRIPTS ══ -->
 <script>
 // ── Année footer ──────────────────────────────────────
 document.getElementById('year').textContent = new Date().getFullYear();
