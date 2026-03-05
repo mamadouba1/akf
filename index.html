@@ -937,15 +937,19 @@ const STATUT_T_ID={1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'};
 const PRIORITE_ID={1:'Basse',2:'Moyenne',3:'Haute'};
 
 function dateSqlT(d){
-  if(!d||d===''||d==='—')return null;
+  if(!d||d===''||d==='—'||d==='undefined')return null;
+  // Format JJ/MM/AAAA
   const p=d.split('/');
   if(p.length===3&&p[0]&&p[1]&&p[2])return p[2]+'-'+p[1]+'-'+p[0];
+  // Format AAAA-MM-JJ (input[type=date])
+  const p2=d.split('-');
+  if(p2.length===3&&p2[0]&&p2[1]&&p2[2])return d;
   return null;
 }
 function _tToSB(t, forUpdate=false){
   const payload={
     activite:t.activite||'', responsable:t.responsable||'',
-    date_debut:dateSqlT(t.date_debut), date_fin:dateSqlT(t.date_fin),
+    date_debut:dateSqlT(t.date_debut)||null, date_fin:dateSqlT(t.date_fin)||null,
     relance:t.relance||'', commentaires:t.commentaires||'',
     commission_id:COMMISSION_MAP[t.commission]||2,
     statut_id:STATUT_T_MAP[t.statut]||1,
