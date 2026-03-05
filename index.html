@@ -444,7 +444,7 @@ if('serviceWorker' in navigator){
     <div class="toolbar">
       <div class="sw"><input type="search" id="s1" placeholder="Rechercher…" oninput="applyFM()"></div>
       <select class="flt" id="f1s" onchange="applyFM()"><option value="">Tous statuts</option><option>Professionnel</option><option>Étudiant</option><option>Autre</option></select>
-      <select class="flt" id="f1d" onchange="applyFM()"><option value="">Participation</option><option value="Oui">Oui</option><option value="Non">Non</option></select>
+
       <select class="flt" id="f1x" onchange="applyFM()"><option value="">Tous genres</option><option>Homme</option><option>Femme</option></select>
       <select class="flt" id="f1v" onchange="applyFM()"><option value="">Toutes villes</option></select>
       <select class="flt" id="f1a" onchange="applyFM()"><option value="">Toutes années</option></select>
@@ -458,7 +458,7 @@ if('serviceWorker' in navigator){
         <th onclick="srt('M','statut')">STATUT ↕</th>
         <th>SPÉCIALITÉ</th>
         <th onclick="srt('M','annee_arrivee')">ARRIVÉE ↕</th>
-        <th>PART.</th><th>VÉRIF.</th><th></th>
+        <th></th>
       </tr></thead>
       <tbody id="tb1"></tbody>
     </table></div>
@@ -481,7 +481,7 @@ if('serviceWorker' in navigator){
       <select class="flt" id="f2s" onchange="applyFM2()"><option value="">Tous statuts</option><option>Professionnel</option><option>Étudiant</option><option>Autre</option></select>
       <select class="flt" id="f2v" onchange="applyFM2()"><option value="">Toutes villes</option></select>
       <select class="flt" id="f2q" onchange="applyFM2()"><option value="">Tous quartiers</option></select>
-      <select class="flt" id="f2d" onchange="applyFM2()"><option value="">Participation</option><option value="Oui">Oui</option><option value="Non">Non</option></select>
+
       <select class="flt" id="f2a" onchange="applyFM2()"><option value="">Toutes années</option></select>
       <span class="rc" id="rc2">0 membres</span>
     </div>
@@ -493,7 +493,7 @@ if('serviceWorker' in navigator){
         <th onclick="srt('M2','statut')">STATUT ↕</th>
         <th>SPÉCIALITÉ</th><th>QUARTIER</th>
         <th onclick="srt('M2','annee_arrivee')">ARRIVÉE ↕</th>
-        <th>INSCRIPTION</th><th>PART.</th><th>VÉRIF.</th><th></th>
+        <th>INSCRIPTION</th><th></th>
       </tr></thead>
       <tbody id="tb2"></tbody>
     </table></div>
@@ -508,7 +508,7 @@ if('serviceWorker' in navigator){
     <div class="mfbar">
       <div class="sw"><input type="search" id="ms" placeholder="Rechercher…" oninput="updateMap()"></div>
       <select class="flt" id="mfs" onchange="updateMap()"><option value="">Tous statuts</option><option>Professionnel</option><option>Étudiant</option><option>Autre</option></select>
-      <select class="flt" id="mfd" onchange="updateMap()"><option value="">Participation</option><option value="Oui">Oui</option><option value="Non">Non</option></select>
+
       <select class="flt" id="mfq" onchange="updateMap()"><option value="">Tous quartiers</option></select>
     </div>
     <div class="qbar" id="qbar"></div>
@@ -926,6 +926,7 @@ function _mToSB(m){
     statut_id:s==='Professionnel'?1:s==='Étudiant'?2:3,
     specialite:m.specialite||'', quartier:m.quartier||'',
     date_inscription:dateSql(m.date_inscription)||null,
+    // direction et verification n'existent pas dans Supabase inscrits
   };
 }
 // ── Maps FK taches ──────────────────────────────────────────────
@@ -951,7 +952,8 @@ function dateSqlT(d){
 function _tToSB(t, forUpdate=false){
   const payload={
     activite:t.activite||'', responsable:t.responsable||'',
-    date_debut:dateSqlT(t.date_debut)||null, date_fin:dateSqlT(t.date_fin)||null,
+    date_debut:(t.date_debut&&t.date_debut!==''&&t.date_debut!=='—')?dateSqlT(t.date_debut):null,
+    date_fin:(t.date_fin&&t.date_fin!==''&&t.date_fin!=='—')?dateSqlT(t.date_fin):null,
     relance:t.relance||'', commentaires:t.commentaires||'',
     commission_id:COMMISSION_MAP[t.commission]||2,
     statut_id:STATUT_T_MAP[t.statut]||1,
@@ -965,22 +967,12 @@ async function sbIM(m){
   if(error){console.warn('SB insert membre:',error.message);return null;}
   return data?.id||true;
 }
-async function sbUM(m, prevVerif){
+async function sbUM(m){
   const payload=_mToSB(m);
   const{error}=m._id
     ?await _sb.from('inscrits').update(payload).eq('id',m._id)
     :await _sb.from('inscrits').update(payload).eq('nom',m.nom).eq('prenom',m.prenom);
   if(error){console.warn('SB update membre:',error.message);return false;}
-  // Envoyer mail si vérification vient de passer à Vérifié
-  if(prevVerif!=='Vérifié'&&m.verification==='Vérifié'&&m.email){
-    try{
-      await emailjs.send(EMAILJS_SERVICE, TEMPLATE_USER, {
-        name:m.prenom||m.nom,
-        to_email:m.email,
-        message:"Bonne nouvelle ! Votre inscription à l'Association des Kébémerois de France (AKF) a été validée par l'administration. Bienvenue officiellement parmi nous ! 🎉"
-      });
-    }catch(e){console.warn('EmailJS vérif:',e);}
-  }
   return true;
 }
 async function sbDM(id,nom,prenom){
@@ -1331,7 +1323,6 @@ function applyFM(){
   fM=M.filter(r=>{
     if(q&&![r.nom,r.prenom,r.ville,r.specialite,r.quartier].join(' ').toLowerCase().includes(q))return false;
     if(es&&r.statut!==es)return false;
-    if(ed&&r.direction!==ed)return false;
     if(ex&&r.sexe!==ex)return false;
     if(ev&&r.ville!==ev)return false;
     if(ea&&r.annee_arrivee!==ea)return false;
@@ -1373,8 +1364,7 @@ function renderT1(){
   g('tb1').innerHTML = rows.length ? rows.map(r=>{
     const idx=M.indexOf(r), c=ac(r.nom);
     const pillStatut = r.statut==='Professionnel' ? `style="background:var(--blp);color:var(--bl)"` : r.statut==='Étudiant' ? `style="background:var(--gop);color:var(--go)"` : `style="background:#f3f4f6;color:#374151"`;
-    const pillDir = r.direction==='Oui' ? `style="background:var(--gp);color:var(--gr)"` : `style="background:#f3f4f6;color:#6b7280"`;
-    const pillVerif = r.verification==='Vérifié' ? `style="background:var(--gp);color:var(--gr)"` : `style="background:var(--rep);color:var(--re)"`;
+
     return `<tr>
       <td style="cursor:pointer" onclick="showDM(${idx})">
         <div style="display:flex;align-items:center;gap:8px">
@@ -1393,8 +1383,7 @@ function renderT1(){
       <td><span class="pill" ${pillStatut}>${r.statut==='Professionnel'?'💼':r.statut==='Étudiant'?'🎓':'🔹'} ${r.statut}</span></td>
       <td style="max-width:155px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.77rem" title="${r.specialite||''}">${hl(r.specialite||'—',q)}</td>
       <td style="font-weight:600">${r.annee_arrivee||'—'}</td>
-      <td><span class="pill" ${pillDir}>${r.direction==='Oui'?'✋ ':''}${r.direction}</span></td>
-      <td><span class="pill" ${pillVerif}>${r.verification==='Vérifié'?'✅':'⚠️'} ${r.verification}</span></td>
+
       <td>
         <div style="display:flex;gap:5px">
           <button class="btn bgh bsm" onclick="editMembre(${idx})" title="Modifier">✏️</button>
@@ -1414,8 +1403,7 @@ function renderT2(){
   g('tb2').innerHTML = rows.length ? rows.map(r=>{
     const idx=M.indexOf(r), c=ac(r.nom);
     const pillStatut = r.statut==='Professionnel' ? `style="background:var(--blp);color:var(--bl)"` : r.statut==='Étudiant' ? `style="background:var(--gop);color:var(--go)"` : `style="background:#f3f4f6;color:#374151"`;
-    const pillDir = r.direction==='Oui' ? `style="background:var(--gp);color:var(--gr)"` : `style="background:#f3f4f6;color:#6b7280"`;
-    const pillVerif = r.verification==='Vérifié' ? `style="background:var(--gp);color:var(--gr)"` : `style="background:var(--rep);color:var(--re)"`;
+
     return `<tr>
       <td>
         <div style="display:flex;align-items:center;gap:7px">
@@ -1431,8 +1419,7 @@ function renderT2(){
       <td>${r.quartier||'—'}</td>
       <td style="font-weight:600">${r.annee_arrivee||'—'}</td>
       <td>${r.date_inscription||'—'}</td>
-      <td><span class="pill" ${pillDir}>${r.direction}</span></td>
-      <td><span class="pill" ${pillVerif}>${r.verification==='Vérifié'?'✅':'⚠️'}</span></td>
+
       <td>
         <div style="display:flex;gap:5px">
           <button class="btn bgh bsm" onclick="editMembre(${idx})" title="Modifier">✏️</button>
@@ -1563,7 +1550,6 @@ function updateMap(){
   const fs=g('mfs').value,fd=g('mfd').value,fq=g('mfq').value,q=(g('ms').value||'').toLowerCase().trim();
   M.filter(r=>{
     if(fs&&r.statut!==fs)return false;
-    if(fd&&r.direction!==fd)return false;
     if(fq&&r.quartier!==fq)return false;
     if(q&&![r.nom,r.prenom,r.ville].join(' ').toLowerCase().includes(q))return false;
     return true;
@@ -1595,7 +1581,7 @@ function showDM(idx){
     ['Sexe',r.sexe||'—'],['Statut',r.statut||'—'],
     ['Spécialité',r.specialite||'—'],['Présentation',r.presentation||'—'],
     ['Quartier',r.quartier||'—'],['Année arrivée',r.annee_arrivee||'—'],
-    ['Participation',r.direction||'—'],['Vérification',r.verification||'—'],
+
     ['Date inscription',r.date_inscription||'—'],
   ].map(([l,v])=>`<div class="di"><div class="dl">${l}</div><div class="dv">${v}</div></div>`).join('');
   openOv('det');
@@ -1657,8 +1643,7 @@ function editMembre(idx){
 }
 g('em-ok').addEventListener('click',async()=>{
   if(emiIdx<0) return;
-  const prevVerif=M[emiIdx].verification;
-  ['nom','prenom','sexe','ville','telephone','email','annee_arrivee','statut','specialite','quartier','direction','verification'].forEach(k=>{
+  ['nom','prenom','sexe','ville','telephone','email','annee_arrivee','statut','specialite','quartier'].forEach(k=>{
     const el=g('em-'+k); if(el) M[emiIdx][k]=el.value.trim();
   });
   // date_inscription
@@ -1667,12 +1652,8 @@ g('em-ok').addEventListener('click',async()=>{
   closeOv('em');
   // Refresh SANS reset pagination
   applyFM(); applyFM2(); updateKM(); drawChM();
-  const ok=await sbUM(M[emiIdx], prevVerif);
-  if(ok&&prevVerif!=='Vérifié'&&M[emiIdx].verification==='Vérifié'){
-    toast('✅ Membre vérifié — email de confirmation envoyé !','#0e7a45');
-  } else {
-    toast(ok?'✅ Membre mis à jour dans Supabase !':'⚠️ Mis à jour (hors-ligne, Supabase KO)',ok?'#0e7a45':'#b07d0a');
-  }
+  const ok=await sbUM(M[emiIdx]);
+  toast(ok?'✅ Membre mis à jour dans Supabase !':'⚠️ Mis à jour (hors-ligne, Supabase KO)',ok?'#0e7a45':'#b07d0a');
 });
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1685,8 +1666,8 @@ async function addTache(){
   if(btn){btn.disabled=true;btn.textContent='⏳ Enregistrement…';}
   const t={id:genId(), activite:act, commission:g('at-commission').value,
     responsable:g('at-responsable').value.trim(),
-    date_debut:g('at-date_debut').value?toFR(g('at-date_debut').value):null,
-    date_fin:g('at-date_fin').value?toFR(g('at-date_fin').value):null,
+    date_debut:g('at-date_debut').value?toFR(g('at-date_debut').value):'',
+    date_fin:g('at-date_fin').value?toFR(g('at-date_fin').value):'',
     statut:g('at-statut').value, relance:'', priorite:g('at-priorite').value,
     commentaires:g('at-commentaires').value.trim(),
   };
@@ -1716,8 +1697,8 @@ g('et-ok').addEventListener('click',async()=>{
   T[etiIdx].activite    = g('et-activite').value.trim();
   T[etiIdx].commission  = g('et-commission').value;
   T[etiIdx].responsable = g('et-responsable').value.trim();
-  T[etiIdx].date_debut  = g('et-date_debut').value ? toFR(g('et-date_debut').value) : null;
-  T[etiIdx].date_fin    = g('et-date_fin').value    ? toFR(g('et-date_fin').value)    : null;
+  T[etiIdx].date_debut  = g('et-date_debut').value ? toFR(g('et-date_debut').value) : '';
+  T[etiIdx].date_fin    = g('et-date_fin').value    ? toFR(g('et-date_fin').value)    : '';
   T[etiIdx].statut      = g('et-statut').value;
   T[etiIdx].priorite    = g('et-priorite').value;
   T[etiIdx].commentaires= g('et-commentaires').value.trim();
@@ -1769,8 +1750,8 @@ function expCSV(type){
   if(type==='membres'||type==='liste'){
     data=fM.length?fM:M;
     // Colonnes = ce qui est visible dans le tableau membres
-    cols=['nom','prenom','ville','telephone','email','statut','specialite','annee_arrivee','direction','verification'];
-    heads=['Nom','Prénom','Ville','Téléphone','Email','Statut','Spécialité','Année arrivée','Participation','Vérification'];
+    cols=['nom','prenom','ville','telephone','email','statut','specialite','annee_arrivee'];
+    heads=['Nom','Prénom','Ville','Téléphone','Email','Statut','Spécialité','Année arrivée'];
     fn='AKF_membres';
   } else {
     data=fT.length?fT:T;
