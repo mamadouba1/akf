@@ -122,7 +122,7 @@ nav{padding:0 8px}
 @keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── TOPBAR ── */
-.topbar{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
 .tt h1{font-family:'DM Serif Display',serif;font-size:1.45rem}
 .tt p{font-size:.78rem;color:var(--mu);margin-top:2px}
 .ta{display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap}
@@ -182,7 +182,8 @@ tbody td{padding:9px 12px;vertical-align:middle}
 .tsub{font-size:.68rem;color:var(--mu);margin-top:1px}
 .btn{border:none;border-radius:8px;padding:7px 14px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
 .bg{background:var(--gr);color:#fff}.bg:hover{background:var(--gr2)}
-.bgh{background:var(--bg);color:var(--ink2);border:1.5px solid var(--ln)}.bgh:hover{border-color:var(--gr);color:var(--gr)}
+.bgh{background:var(--bg);color:var(--ink2);border:1.5px solid var(--ln)}
+    .br{background:#fee2e2;color:#c0392b;border:1px solid #fca5a5}.bgh:hover{border-color:var(--gr);color:var(--gr)}
 .br{background:var(--rep);color:var(--re)}.br:hover{background:var(--re);color:#fff}
 .bsm{padding:4px 9px;font-size:.71rem;border-radius:7px}
 
@@ -371,7 +372,7 @@ if('serviceWorker' in navigator){
 ══════════════════════════════════════════════════════ -->
 <div id="page-admin">
   <!-- Bouton déconnexion -->
-  <button onclick="logout()" style="position:fixed;top:10px;right:10px;z-index:9999;background:#c0392b;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">🚪 Déconnexion</button>
+
 
 
 <div class="ldov hide" id="ldov">
@@ -410,7 +411,8 @@ if('serviceWorker' in navigator){
     <div class="tt"><h1>Tableau de bord membres</h1><p>Vue d'ensemble · AKF 2026</p></div>
     <div class="ta">
       <button class="btn bgh" onclick="expCSV('membres')">⬇️ CSV</button>
-      <button class="btn bg" onclick="openOv('am')">＋ Ajouter</button>
+      <button class="btn bg" onclick="openOv('am')">＋ Ajouter un membre</button>
+      <button class="btn br" onclick="logout()">🚪 Déconnexion</button>
     </div>
   </div>
   <div class="kpis">
@@ -472,7 +474,8 @@ if('serviceWorker' in navigator){
     <div class="tt"><h1>Liste complète</h1><p>Tous les inscrits AKF</p></div>
     <div class="ta">
       <button class="btn bgh" onclick="expCSV('liste')">⬇️ CSV</button>
-      <button class="btn bg" onclick="openOv('am')">＋ Ajouter</button>
+      <button class="btn bg" onclick="openOv('am')">＋ Ajouter un membre</button>
+      <button class="btn br" onclick="logout()">🚪 Déconnexion</button>
     </div>
   </div>
   <div class="tcard">
@@ -503,7 +506,7 @@ if('serviceWorker' in navigator){
 
 <!-- ══ TAB CARTE ══ -->
 <div class="tc" id="tab-carte">
-  <div class="topbar"><div class="tt"><h1>Carte des membres</h1><p>Répartition géographique</p></div></div>
+  <div class="topbar"><div class="tt"><h1>Carte des membres</h1><p>Répartition géographique</p></div><div class="ta"><button class="btn br" onclick="logout()">🚪 Déconnexion</button></div></div>
   <div class="card" style="margin-bottom:14px">
     <div class="mfbar">
       <div class="sw"><input type="search" id="ms" placeholder="Rechercher…" oninput="updateMap()"></div>
@@ -522,7 +525,8 @@ if('serviceWorker' in navigator){
     <div class="tt"><h1>Suivi des activités</h1><p>Tâches par commission · AKF 2026</p></div>
     <div class="ta">
       <button class="btn bgh" onclick="expCSV('taches')">⬇️ CSV</button>
-      <button class="btn bg" onclick="openOv('at')">＋ Ajouter</button>
+      <button class="btn bg" onclick="openOv('at')">＋ Ajouter une tâche</button>
+      <button class="btn br" onclick="logout()">🚪 Déconnexion</button>
     </div>
   </div>
   <div class="kpis">
@@ -740,6 +744,7 @@ if('serviceWorker' in navigator){
       <div class="fr"><label>Priorité</label>
         <select id="at-priorite"><option>Haute</option><option selected>Moyenne</option><option>Basse</option></select>
       </div>
+      <div class="fr"><label>Relance</label><input id="at-relance" placeholder="Date ou note de relance…"></div>
       <div class="fr full"><label>Commentaires / État d'avancement</label><textarea id="at-commentaires" rows="2" placeholder="Notes…"></textarea></div>
     </div>
     <div class="fa">
@@ -767,6 +772,7 @@ if('serviceWorker' in navigator){
       <div class="fr"><label>Priorité</label>
         <select id="et-priorite"><option>Haute</option><option>Moyenne</option><option>Basse</option></select>
       </div>
+      <div class="fr"><label>Relance</label><input id="et-relance" placeholder="Date ou note de relance…"></div>
       <div class="fr full"><label>Commentaires / État d'avancement</label><textarea id="et-commentaires" rows="2"></textarea></div>
     </div>
     <div class="fa">
@@ -938,27 +944,33 @@ const STATUT_T_ID={1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'};
 const PRIORITE_ID={1:'Basse',2:'Moyenne',3:'Haute'};
 
 function dateSqlT(d){
-  if(d===null||d===undefined||d===''||d==='—'||d==='undefined')return null;
+  // Retourne TOUJOURS null si pas de date valide — jamais '' ou undefined
+  if(d===null||d===undefined)return null;
   d=String(d).trim();
-  if(!d)return null;
+  if(!d||d===''||d==='—'||d==='undefined'||d==='null')return null;
   // Format JJ/MM/AAAA → AAAA-MM-JJ
   const p=d.split('/');
-  if(p.length===3&&p[0]&&p[1]&&p[2])return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
-  // Format AAAA-MM-JJ déjà bon
+  if(p.length===3&&p[0]&&p[1]&&p[2]){
+    const y=p[2].padStart(4,'0'),m=p[1].padStart(2,'0'),j=p[0].padStart(2,'0');
+    return `${y}-${m}-${j}`;
+  }
+  // Format AAAA-MM-JJ déjà bon pour Supabase
   const p2=d.split('-');
   if(p2.length===3&&p2[0].length===4&&p2[1]&&p2[2])return d;
   return null;
 }
 function _tToSB(t, forUpdate=false){
+  const dd=dateSqlT(t.date_debut), df=dateSqlT(t.date_fin);
   const payload={
     activite:t.activite||'', responsable:t.responsable||'',
-    date_debut:(t.date_debut&&t.date_debut!==''&&t.date_debut!=='—')?dateSqlT(t.date_debut):null,
-    date_fin:(t.date_fin&&t.date_fin!==''&&t.date_fin!=='—')?dateSqlT(t.date_fin):null,
     relance:t.relance||'', commentaires:t.commentaires||'',
     commission_id:COMMISSION_MAP[t.commission]||2,
     statut_id:STATUT_T_MAP[t.statut]||1,
     priorite_id:PRIORITE_MAP[t.priorite]||2,
   };
+  // N'ajouter les dates QUE si elles sont valides — jamais envoyer '' à Supabase
+  if(dd!==null) payload.date_debut=dd; else payload.date_debut=null;
+  if(df!==null) payload.date_fin=df; else payload.date_fin=null;
   if(!forUpdate) payload.id_activite=t.id||'';
   return payload;
 }
@@ -989,6 +1001,10 @@ async function sbIT(t){
 }
 async function sbUT(t){
   const payload=_tToSB(t,true);
+  // Nettoyage final : forcer null sur toute valeur '' pour les champs date
+  if(payload.date_debut==='')payload.date_debut=null;
+  if(payload.date_fin==='')payload.date_fin=null;
+  console.log('📤 payload sbUT:', JSON.stringify(payload));
   let error;
   if(t._id){({error}=await _sb.from('taches').update(payload).eq('id',t._id));}
   else{({error}=await _sb.from('taches').update(payload).eq('id_activite',t.id||''));}
@@ -1153,8 +1169,8 @@ function sbRowToTache(r){
     activite:     r.activite||'',
     commission:   {1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commissaires aux comptes',5:'Commission Sociale et Educative',6:'Relations extérieurs',7:'Organisation',8:'Sages'}[r.commission_id]||'Secrétariat',
     responsable:  r.responsable||'',
-    date_debut:   fmtDate(r.date_debut),
-    date_fin:     fmtDate(r.date_fin),
+    date_debut:   fmtDate(r.date_debut)||null,
+    date_fin:     fmtDate(r.date_fin)||null,
     statut:       {1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'}[r.statut_id]||'À faire',
     relance:      r.relance||'',
     priorite:     {1:'Basse',2:'Moyenne',3:'Haute'}[r.priorite_id]||'Moyenne',
@@ -1665,9 +1681,9 @@ async function addTache(){
   if(btn){btn.disabled=true;btn.textContent='⏳ Enregistrement…';}
   const t={id:genId(), activite:act, commission:g('at-commission').value,
     responsable:g('at-responsable').value.trim(),
-    date_debut:g('at-date_debut').value?toFR(g('at-date_debut').value):'',
-    date_fin:g('at-date_fin').value?toFR(g('at-date_fin').value):'',
-    statut:g('at-statut').value, relance:'', priorite:g('at-priorite').value,
+    date_debut:g('at-date_debut').value?toFR(g('at-date_debut').value):null,
+    date_fin:g('at-date_fin').value?toFR(g('at-date_fin').value):null,
+    statut:g('at-statut').value, relance:g('at-relance')?.value.trim()||'', priorite:g('at-priorite').value,
     commentaires:g('at-commentaires').value.trim(),
   };
   const sbId=await sbIT(t);
@@ -1676,7 +1692,7 @@ async function addTache(){
   if(btn){btn.disabled=false;btn.textContent='✅ Enregistrer';}
   closeOv('at'); refreshTaches();
   toast(sbId?'✅ Tâche ajoutée dans Supabase !':'⚠️ Tâche ajoutée (hors-ligne, Supabase KO)',sbId?'#0e7a45':'#b07d0a');
-  ['at-activite','at-responsable','at-date_debut','at-date_fin','at-commentaires'].forEach(id=>{g(id).value='';});
+  ['at-activite','at-responsable','at-date_debut','at-date_fin','at-relance','at-commentaires'].forEach(id=>{g(id).value='';});
 }
 
 function editTache(idx){
@@ -1688,6 +1704,7 @@ function editTache(idx){
   g('et-date_fin').value=toISO(t.date_fin);
   g('et-statut').value=t.statut||'À faire';
   g('et-priorite').value=t.priorite||'Moyenne';
+  g('et-relance').value=t.relance||'';
   g('et-commentaires').value=t.commentaires||'';
   openOv('et');
 }
@@ -1696,10 +1713,11 @@ g('et-ok').addEventListener('click',async()=>{
   T[etiIdx].activite    = g('et-activite').value.trim();
   T[etiIdx].commission  = g('et-commission').value;
   T[etiIdx].responsable = g('et-responsable').value.trim();
-  T[etiIdx].date_debut  = g('et-date_debut').value ? toFR(g('et-date_debut').value) : '';
-  T[etiIdx].date_fin    = g('et-date_fin').value    ? toFR(g('et-date_fin').value)    : '';
+  T[etiIdx].date_debut  = g('et-date_debut').value ? toFR(g('et-date_debut').value) : null;
+  T[etiIdx].date_fin    = g('et-date_fin').value    ? toFR(g('et-date_fin').value)    : null;
   T[etiIdx].statut      = g('et-statut').value;
   T[etiIdx].priorite    = g('et-priorite').value;
+  T[etiIdx].relance      = g('et-relance')?.value.trim()||'';
   T[etiIdx].commentaires= g('et-commentaires').value.trim();
   closeOv('et');
   updateKT(); drawChT(); renderTT(); // pas de reset page
