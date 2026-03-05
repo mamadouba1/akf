@@ -937,13 +937,15 @@ const STATUT_T_ID={1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'};
 const PRIORITE_ID={1:'Basse',2:'Moyenne',3:'Haute'};
 
 function dateSqlT(d){
-  if(!d||d===''||d==='—'||d==='undefined')return null;
-  // Format JJ/MM/AAAA
+  if(d===null||d===undefined||d===''||d==='—'||d==='undefined')return null;
+  d=String(d).trim();
+  if(!d)return null;
+  // Format JJ/MM/AAAA → AAAA-MM-JJ
   const p=d.split('/');
-  if(p.length===3&&p[0]&&p[1]&&p[2])return p[2]+'-'+p[1]+'-'+p[0];
-  // Format AAAA-MM-JJ (input[type=date])
+  if(p.length===3&&p[0]&&p[1]&&p[2])return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+  // Format AAAA-MM-JJ déjà bon
   const p2=d.split('-');
-  if(p2.length===3&&p2[0]&&p2[1]&&p2[2])return d;
+  if(p2.length===3&&p2[0].length===4&&p2[1]&&p2[2])return d;
   return null;
 }
 function _tToSB(t, forUpdate=false){
@@ -1683,7 +1685,8 @@ async function addTache(){
   if(btn){btn.disabled=true;btn.textContent='⏳ Enregistrement…';}
   const t={id:genId(), activite:act, commission:g('at-commission').value,
     responsable:g('at-responsable').value.trim(),
-    date_debut:toFR(g('at-date_debut').value), date_fin:toFR(g('at-date_fin').value),
+    date_debut:g('at-date_debut').value?toFR(g('at-date_debut').value):null,
+    date_fin:g('at-date_fin').value?toFR(g('at-date_fin').value):null,
     statut:g('at-statut').value, relance:'', priorite:g('at-priorite').value,
     commentaires:g('at-commentaires').value.trim(),
   };
@@ -1713,8 +1716,8 @@ g('et-ok').addEventListener('click',async()=>{
   T[etiIdx].activite    = g('et-activite').value.trim();
   T[etiIdx].commission  = g('et-commission').value;
   T[etiIdx].responsable = g('et-responsable').value.trim();
-  T[etiIdx].date_debut  = toFR(g('et-date_debut').value);
-  T[etiIdx].date_fin    = toFR(g('et-date_fin').value);
+  T[etiIdx].date_debut  = g('et-date_debut').value ? toFR(g('et-date_debut').value) : null;
+  T[etiIdx].date_fin    = g('et-date_fin').value    ? toFR(g('et-date_fin').value)    : null;
   T[etiIdx].statut      = g('et-statut').value;
   T[etiIdx].priorite    = g('et-priorite').value;
   T[etiIdx].commentaires= g('et-commentaires').value.trim();
