@@ -110,6 +110,12 @@ nav{padding:0 8px}
 .ni.on{color:#fff;background:rgba(255,255,255,.12)}
 .ni-ic{font-size:13px;width:18px;text-align:center;flex-shrink:0}
 .ni-b{margin-left:auto;background:rgba(255,255,255,.12);color:rgba(255,255,255,.55);font-size:.62rem;padding:2px 7px;border-radius:10px;font-weight:700}
+.ni-txt{flex:1}
+
+@media(max-width:768px){
+  .ni-txt{font-size:.58rem;margin-top:1px;flex:none}
+  .ni-ic{width:auto;font-size:20px}
+}
 .sync-row{padding:8px 12px 4px}
 .sync-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;border-radius:8px;background:rgba(14,122,69,.25);border:1px solid rgba(14,122,69,.4);color:rgba(255,255,255,.75);font-size:.74rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
 .sync-btn:hover{background:rgba(14,122,69,.45)}
@@ -144,6 +150,107 @@ nav{padding:0 8px}
 .cr2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
 .cr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
 @media(max-width:920px){.cr2,.cr3{grid-template-columns:1fr}}
+
+/* ── RESPONSIVE MOBILE ── */
+@media(max-width:768px){
+  /* Sidebar devient une barre de navigation en bas */
+  .layout{flex-direction:column}
+
+  .sb{
+    width:100%;height:auto;
+    position:fixed;bottom:0;left:0;right:0;
+    z-index:400;
+    flex-direction:column;
+    border-top:1px solid rgba(255,255,255,.1);
+    box-shadow:0 -4px 20px rgba(0,0,0,.25);
+  }
+
+  /* Header sidebar : caché sur mobile, remplacé par topbar */
+  .sl{display:none}
+  .sync-row{display:none}
+  .snl{display:none}
+  .sfoot{display:none}
+
+  /* Nav devient une barre horizontale */
+  nav{
+    display:flex;flex-direction:row;
+    padding:0;overflow-x:auto;
+    scrollbar-width:none;
+  }
+  nav::-webkit-scrollbar{display:none}
+
+  .ni{
+    flex:1;min-width:60px;
+    flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:8px 4px 10px;
+    border-radius:0;
+    margin-bottom:0;
+    gap:3px;
+    font-size:.6rem;
+    text-align:center;
+    white-space:nowrap;
+  }
+  .ni-ic{font-size:18px;width:auto}
+  .ni-b{
+    display:none; /* badges cachés sur mobile */
+  }
+  .ni.on{
+    background:rgba(255,255,255,.12);
+    border-top:2px solid var(--gr2);
+  }
+
+  /* Main avec padding-bottom pour la nav bar */
+  .main{
+    padding:14px 12px 80px;
+    width:100%;
+  }
+
+  /* Topbar adapté mobile */
+  .topbar{flex-direction:column;gap:8px;margin-bottom:12px}
+  .ta{margin-left:0;width:100%;justify-content:flex-start;flex-wrap:wrap}
+  .tt h1{font-size:1.1rem}
+  .tt p{font-size:.72rem}
+
+  /* KPIs 2 colonnes */
+  .kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:10px 12px}
+  .kv{font-size:1.5rem}
+
+  /* Charts 1 colonne */
+  .cr2,.cr3{grid-template-columns:1fr}
+
+  /* Tables scrollables */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:600px}
+
+  /* Toolbar filtres sur mobile */
+  .toolbar{flex-wrap:wrap;gap:6px;padding:8px 10px}
+  .sw input{width:100%}
+  .flt{font-size:.72rem}
+
+  /* Map hauteur réduite */
+  #map{height:240px}
+
+  /* Modals plein écran sur mobile */
+  .mbox,.dbox{
+    width:96vw;max-height:90vh;
+    border-radius:12px;
+    padding:16px;
+  }
+  .fg{grid-template-columns:1fr}
+  .fr.full{grid-column:auto}
+
+  /* CR wrapper */
+  #cr-content{padding:16px !important}
+
+  /* Toast en bas */
+  .tw-wrap{bottom:90px;right:10px;left:10px}
+  .toast{text-align:center}
+
+  /* Bouton déconnexion fixe caché (géré dans topbar) */
+  body > button[onclick="logout()"]{display:none}
+}
 .card{background:var(--wh);border-radius:var(--R);box-shadow:var(--sh);padding:16px}
 .ct{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .ctl{font-size:.8rem;font-weight:700}
@@ -393,11 +500,11 @@ if('serviceWorker' in navigator){
   </div>
   <div class="snl">Navigation</div>
   <nav>
-    <div class="ni on" id="ni-membres" onclick="goTab('membres',this)"><span class="ni-ic">👥</span>Tableau de bord<span class="ni-b" id="nb-m">0</span></div>
-    <div class="ni" id="ni-liste" onclick="goTab('liste',this)"><span class="ni-ic">📋</span>Liste complète<span class="ni-b" id="nb-l">0</span></div>
-    <div class="ni" id="ni-carte" onclick="goTab('carte',this)"><span class="ni-ic">🗺️</span>Carte</div>
-    <div class="ni" id="ni-taches" onclick="goTab('taches',this)"><span class="ni-ic">✅</span>Tâches<span class="ni-b" id="nb-t">0</span></div>
-    <div class="ni" id="ni-cr" onclick="goTab('cr',this)"><span class="ni-ic">📄</span>Compte rendu</div>
+    <div class="ni on" id="ni-membres" onclick="goTab('membres',this)"><span class="ni-ic">👥</span><span class="ni-txt">Tableau de bord</span><span class="ni-b" id="nb-m">0</span></div>
+    <div class="ni" id="ni-liste" onclick="goTab('liste',this)"><span class="ni-ic">📋</span><span class="ni-txt">Liste</span><span class="ni-b" id="nb-l">0</span></div>
+    <div class="ni" id="ni-carte" onclick="goTab('carte',this)"><span class="ni-ic">🗺️</span><span class="ni-txt">Carte</span></div>
+    <div class="ni" id="ni-taches" onclick="goTab('taches',this)"><span class="ni-ic">✅</span><span class="ni-txt">Tâches</span><span class="ni-b" id="nb-t">0</span></div>
+    <div class="ni" id="ni-cr" onclick="goTab('cr',this)"><span class="ni-ic">📄</span><span class="ni-txt">CR</span></div>
   </nav>
   <div class="sfoot" id="sfoot">Données locales</div>
 </div>
