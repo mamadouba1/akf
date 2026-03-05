@@ -919,7 +919,7 @@ const _sb = supabase.createClient(
 
 function _mToSB(m){
   const s=m.statut||'Autre';
-  function dateSql(d){if(!d||d===''||d==='—')return null;const p=d.split('/');if(p.length===3&&p[0]&&p[1]&&p[2])return p[2]+'-'+p[1]+'-'+p[0];return null;}
+  function dateSql(d){if(!d)return null;const p=d.split('/');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:null;}
   return{
     nom:m.nom||'', prenom:m.prenom||'',
     sexe_id:m.sexe==='Homme'?1:2,
@@ -930,51 +930,48 @@ function _mToSB(m){
     date_inscription:dateSql(m.date_inscription)||null,
   };
 }
-// Maps label → id pour les colonnes FK de la table taches
-const COMMISSION_MAP = {
-  'Présidence':1,'Secrétariat':2,'Trésorerie':3,
-  'Commissaires aux comptes':4,'Commission Sociale et Educative':5,
-  'Relations extérieurs':6,'Organisation':7,'Sages':8
-};
-const STATUT_T_MAP = {'À faire':1,'En cours':2,'Terminée':3,'Annulée':4,'Annulé':4};
-const PRIORITE_MAP = {'Basse':1,'Moyenne':2,'Haute':3,'haute':3};
+// Maps label → id FK table taches
+const COMMISSION_MAP={'Présidence':1,'Secrétariat':2,'Trésorerie':3,'Commissaires aux comptes':4,'Commission Sociale et Educative':5,'Relations extérieurs':6,'Organisation':7,'Sages':8};
+const STATUT_T_MAP={'À faire':1,'En cours':2,'Terminée':3,'Annulée':4,'Annulé':4};
+const PRIORITE_MAP={'Basse':1,'Moyenne':2,'Haute':3,'haute':3};
 
 function _tToSB(t, forUpdate=false){
-  // dateSql : retourne null si date vide ou invalide (évite l'erreur Supabase "invalid input syntax for type date")
   function dateSql(d){
-    if(!d || d==='' || d==='—') return null;
-    const p = d.split('/');
-    if(p.length===3 && p[0] && p[1] && p[2]) return p[2]+'-'+p[1]+'-'+p[0];
+    if(!d||d===''||d==='—')return null;
+    const p=d.split('/');
+    if(p.length===3&&p[0]&&p[1]&&p[2])return p[2]+'-'+p[1]+'-'+p[0];
     return null;
   }
-  const payload = {
-    activite:      t.activite||'',
-    responsable:   t.responsable||'',
-    date_debut:    dateSql(t.date_debut),
-    date_fin:      dateSql(t.date_fin),
-    relance:       t.relance||'',
-    commentaires:  t.commentaires||'',
-    commission_id: COMMISSION_MAP[t.commission] || 2,
-    statut_id:     STATUT_T_MAP[t.statut]       || 1,
-    priorite_id:   PRIORITE_MAP[t.priorite]     || 2,
+  const payload={
+    activite:t.activite||'', responsable:t.responsable||'',
+    date_debut:dateSql(t.date_debut), date_fin:dateSql(t.date_fin),
+    relance:t.relance||'', commentaires:t.commentaires||'',
+    commission_id:COMMISSION_MAP[t.commission]||2,
+    statut_id:STATUT_T_MAP[t.statut]||1,
+    priorite_id:PRIORITE_MAP[t.priorite]||2,
   };
-  if(!forUpdate) payload.id_activite = t.id||'';
+  if(!forUpdate) payload.id_activite=t.id||'';
   return payload;
 }
 async function sbIM(m){const{error}=await _sb.from('inscrits').insert([_mToSB(m)]);if(error)console.warn('SB insert membre:',error.message);return!error;}
-async function sbUM(m){const{error}=await _sb.from('inscrits').update(_mToSB(m)).eq('nom',m.nom).eq('prenom',m.prenom);if(error)console.warn('SB update membre:',error.message);return!error;}
-async function sbDM(nom,prenom){const{error}=await _sb.from('inscrits').delete().eq('nom',nom).eq('prenom',prenom);if(error)console.warn('SB delete membre:',error.message);return!error;}
+async function sbUM(m){
+  // Utiliser _id (bigint) si dispo, sinon fallback nom+prenom
+  const payload=_mToSB(m);
+  const{error}=m._id
+    ? await _sb.from('inscrits').update(payload).eq('id',m._id)
+    : await _sb.from('inscrits').update(payload).eq('nom',m.nom).eq('prenom',m.prenom);
+  if(error)console.warn('SB update membre:',error.message);
+  return!error;
+}
+async function sbDM(nom,prenom,_id){const{error}=await _sb.from('inscrits').delete().eq(_id?'id':'nom',_id||nom);if(error)console.warn('SB delete membre:',error.message);return!error;}
 async function sbIT(t){const{data,error}=await _sb.from('taches').insert([_tToSB(t,false)]).select('id').single();if(error){console.warn('SB insert tâche:',error.message);return null;}return data?.id||true;}
 async function sbUT(t){
   const payload=_tToSB(t,true);
   let error;
-  if(t._id){
-    ({error}=await _sb.from('taches').update(payload).eq('id',t._id));
-  } else {
-    ({error}=await _sb.from('taches').update(payload).eq('id_activite',t.id||''));
-  }
-  if(error) console.warn('SB update tâche:',error.message);
-  return !error;
+  if(t._id){({error}=await _sb.from('taches').update(payload).eq('id',t._id));}
+  else{({error}=await _sb.from('taches').update(payload).eq('id_activite',t.id||''));}
+  if(error)console.warn('SB update tâche:',error.message);
+  return!error;
 }
 async function sbDT(id,_id){const{error}=await _sb.from('taches').delete().eq(_id?'id':'id_activite',_id||id);if(error)console.warn('SB delete tâche:',error.message);return!error;}
 
@@ -1622,7 +1619,9 @@ g('em-ok').addEventListener('click',async()=>{
   ['nom','prenom','sexe','ville','telephone','email','annee_arrivee','statut','specialite','quartier','direction','verification'].forEach(k=>{
     const el=g('em-'+k); if(el) M[emiIdx][k]=el.value.trim();
   });
-  closeOv('em'); refreshAll();
+  closeOv('em');
+  // Rafraîchir SANS reset de page (p1/p2 conservés)
+  applyFM(); applyFM2(); updateKM(); drawChM();
   const ok=await sbUM(M[emiIdx]);
   toast(ok?'✅ Membre mis à jour dans Supabase !':'⚠️ Mis à jour (hors-ligne, Supabase KO)',ok?'#0e7a45':'#b07d0a');
 });
@@ -1641,11 +1640,12 @@ async function addTache(){
     statut:g('at-statut').value, relance:'', priorite:g('at-priorite').value,
     commentaires:g('at-commentaires').value.trim(),
   };
+  const sbId=await sbIT(t);
+  if(sbId && sbId!==true) t._id=sbId;
   T.push(t);
-  const ok=await sbIT(t);
   if(btn){btn.disabled=false;btn.textContent='✅ Enregistrer';}
   closeOv('at'); refreshTaches();
-  toast(ok?'✅ Tâche ajoutée dans Supabase !':'⚠️ Tâche ajoutée (hors-ligne, Supabase KO)',ok?'#0e7a45':'#b07d0a');
+  toast(sbId?'✅ Tâche ajoutée dans Supabase !':'⚠️ Tâche ajoutée (hors-ligne, Supabase KO)',sbId?'#0e7a45':'#b07d0a');
   ['at-activite','at-responsable','at-date_debut','at-date_fin','at-commentaires'].forEach(id=>{g(id).value='';});
 }
 
@@ -1671,7 +1671,9 @@ g('et-ok').addEventListener('click',async()=>{
   T[etiIdx].statut      = g('et-statut').value;
   T[etiIdx].priorite    = g('et-priorite').value;
   T[etiIdx].commentaires= g('et-commentaires').value.trim();
-  closeOv('et'); refreshTaches();
+  closeOv('et');
+  // Rafraîchir SANS reset de page (pt conservé)
+  updateKT(); drawChT(); renderTT();
   const ok=await sbUT(T[etiIdx]);
   toast(ok?'✅ Tâche mise à jour dans Supabase !':'⚠️ Mis à jour (hors-ligne, Supabase KO)',ok?'#0e7a45':'#b07d0a');
 });
@@ -1684,8 +1686,8 @@ function confirmDel(type,idx){
   g('del-msg').textContent = `Supprimer "${name}" ? Cette action est irréversible.`;
   delFn = async()=>{
     if(type==='membre'){
-      const{nom,prenom}=M[idx]; M.splice(idx,1); refreshAll();
-      const ok=await sbDM(nom,prenom);
+      const{nom,prenom,_id}=M[idx]; M.splice(idx,1); refreshAll();
+      const ok=await sbDM(nom,prenom,_id);
       toast(ok?'🗑️ Membre supprimé de Supabase.':'🗑️ Supprimé localement (Supabase KO)',ok?'#0e7a45':'#b07d0a');
     } else {
       const id=T[idx].id; T.splice(idx,1); refreshTaches();
