@@ -943,6 +943,12 @@ const COMMISSION_ID={1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commiss
 const STATUT_T_ID={1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'};
 const PRIORITE_ID={1:'Basse',2:'Moyenne',3:'Haute'};
 
+function fmtD(d){
+  if(!d)return'—';
+  const p=String(d).split('-');
+  if(p.length===3)return`${p[2]}/${p[1]}/${p[0]}`;
+  return d;
+}
 function dateSqlT(d){
   // Retourne TOUJOURS null si pas de date valide — jamais '' ou undefined
   if(d===null||d===undefined)return null;
@@ -960,18 +966,18 @@ function dateSqlT(d){
   return null;
 }
 function _tToSB(t, forUpdate=false){
-  const dd=dateSqlT(t.date_debut), df=dateSqlT(t.date_fin);
   const payload={
-    activite:t.activite||'', responsable:t.responsable||'',
-    relance:dateSqlT(t.relance)||null, commentaires:t.commentaires||'',
-    commission_id:COMMISSION_MAP[t.commission]||2,
-    statut_id:STATUT_T_MAP[t.statut]||1,
-    priorite_id:PRIORITE_MAP[t.priorite]||2,
+    activite:  t.activite||'',
+    responsable: t.responsable||'',
+    date_debut:  t.date_debut||null,
+    date_fin:    t.date_fin||null,
+    relance:     t.relance||null,
+    commentaires:t.commentaires||'',
+    commission_id: COMMISSION_MAP[t.commission]||2,
+    statut_id:     STATUT_T_MAP[t.statut]||1,
+    priorite_id:   PRIORITE_MAP[t.priorite]||2,
   };
-  // N'ajouter les dates QUE si elles sont valides — jamais envoyer '' à Supabase
-  if(dd!==null) payload.date_debut=dd; else payload.date_debut=null;
-  if(df!==null) payload.date_fin=df; else payload.date_fin=null;
-  if(!forUpdate) payload.id_activite=t.id||'';
+  // id auto-généré par Supabase
   return payload;
 }
 async function sbIM(m){
@@ -997,22 +1003,21 @@ async function sbDM(id,nom,prenom){
 async function sbIT(t){
   const{data,error}=await _sb.from('taches').insert([_tToSB(t,false)]).select('id').single();
   if(error){console.warn('SB insert tâche:',error.message);return null;}
-  return data?.id||true;
+  return data?.id||null;
 }
 async function sbUT(t){
   const payload=_tToSB(t,true);
-  // Nettoyage final : forcer null sur toute valeur '' pour les champs date
   if(payload.date_debut==='')payload.date_debut=null;
   if(payload.date_fin==='')payload.date_fin=null;
-  console.log('📤 payload sbUT:', JSON.stringify(payload));
   let error;
-  if(t._id){({error}=await _sb.from('taches').update(payload).eq('id',t._id));}
-  else{({error}=await _sb.from('taches').update(payload).eq('id_activite',t.id||''));}
+  if(!t._id){console.warn('SB update tâche: _id manquant');return false;}
+  ({error}=await _sb.from('taches').update(payload).eq('id',t._id));
   if(error)console.warn('SB update tâche:',error.message);
   return!error;
 }
 async function sbDT(id,_id){
-  const{error}=await _sb.from('taches').delete().eq(_id?'id':'id_activite',_id||id);
+  if(!_id){console.warn('SB delete tâche: _id manquant');return false;}
+  const{error}=await _sb.from('taches').delete().eq('id',_id);
   if(error)console.warn('SB delete tâche:',error.message);
   return!error;
 }
@@ -1165,14 +1170,14 @@ function sbRowToTache(r){
   }
   return {
     _id:          r.id,
-    id:           r.id_activite||'',
+    id:           r.id,
     activite:     r.activite||'',
     commission:   {1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commissaires aux comptes',5:'Commission Sociale et Educative',6:'Relations extérieurs',7:'Organisation',8:'Sages'}[r.commission_id]||'Secrétariat',
     responsable:  r.responsable||'',
-    date_debut:   fmtDate(r.date_debut)||null,
-    date_fin:     fmtDate(r.date_fin)||null,
+    date_debut:   r.date_debut||null,
+    date_fin:     r.date_fin||null,
     statut:       {1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'}[r.statut_id]||'À faire',
-    relance:      r.relance?fmtDate(r.relance):null,
+    relance:      r.relance||null,
     priorite:     {1:'Basse',2:'Moyenne',3:'Haute'}[r.priorite_id]||'Moyenne',
     commentaires: r.commentaires||'',
   };
@@ -1237,7 +1242,7 @@ function ini(n,p){return((n||'')[0]||'?').toUpperCase()+((p||'')[0]||'?').toUppe
 function g(id){return document.getElementById(id);}
 function hl(s,q){if(!q||!s)return s||'';const i=s.toLowerCase().indexOf(q);return i<0?s:s.slice(0,i)+'<mark style="background:#fef08a;border-radius:2px">'+s.slice(i,i+q.length)+'</mark>'+s.slice(i+q.length);}
 function pct(n,t){return t?Math.round(n/t*100)+'%':'0%';}
-function isLate(t){if(!t.date_fin||['Terminée','Annulé'].includes(t.statut))return false;const[d,m,y]=t.date_fin.split('/');return new Date(y,m-1,d)<new Date();}
+function isLate(t){if(!t.date_fin||['Terminée','Annulée','Annulé'].includes(t.statut))return false;return new Date(t.date_fin)<new Date();}
 function toISO(d){if(!d)return'';const p=d.split('/');return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:''}
 function toFR(d){if(!d)return'';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:''}
 function nowFR(){const d=new Date();return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
@@ -1462,14 +1467,14 @@ function renderTT(){
           <div class="av" style="background:${cm.col};font-size:1rem;min-width:34px">${cm.ico}</div>
           <div style="min-width:0">
             <div class="tn" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px" title="${t.activite}">${hl(t.activite,q)}</div>
-            <div class="tsub">${t.id}</div>
+            <div class="tsub" style="font-size:.65rem;color:var(--mu)">#${t._id||'—'}</div>
           </div>
         </div>
       </td>
       <td><span class="pill" style="background:${cm.bg};color:${cm.col};font-size:.66rem">${cm.ico} ${hl(t.commission||'—',q)}</span></td>
       <td style="font-size:.77rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.responsable||''}">${hl(t.responsable||'—',q)}</td>
-      <td style="font-size:.76rem;white-space:nowrap">${t.date_debut||'—'}</td>
-      <td style="font-size:.76rem;white-space:nowrap;${isLate(t)?'color:var(--re);font-weight:700':''}">${t.date_fin||'—'}${isLate(t)?' ⚠️':''}</td>
+      <td style="font-size:.76rem;white-space:nowrap">${fmtD(t.date_debut)}</td>
+      <td style="font-size:.76rem;white-space:nowrap;${isLate(t)?'color:var(--re);font-weight:700':''}">${fmtD(t.date_fin)}${isLate(t)?' ⚠️':''}</td>
       <td><span class="pill" style="background:${sb};color:${sc};font-size:.68rem">${t.statut||'—'}</span></td>
       <td><span class="pill" style="background:${pb};color:${pc};font-size:.68rem">${t.priorite||'—'}</span></td>
       <td style="font-size:.73rem;color:var(--mu);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${(t.commentaires||'').replace(/"/g,'&quot;')}">${t.commentaires||'—'}</td>
@@ -1609,9 +1614,9 @@ function showDT(idx){
   g('det-nm').textContent=t.activite||'';
   g('det-sub').textContent=(t.commission||'')+(t.commission&&t.statut?' · ':'')+t.statut;
   g('det-grid').innerHTML=[
-    ['ID',t.id||'—'],['Commission',t.commission||'—'],
-    ['Responsable',t.responsable||'—'],['Date début',t.date_debut||'—'],
-    ['Date fin',t.date_fin||'—'],['Statut',t.statut||'—'],
+    ['Commission',t.commission||'—'],
+    ['Responsable',t.responsable||'—'],['Date début',fmtD(t.date_debut)],
+    ['Date fin',fmtD(t.date_fin)],['Relance',fmtD(t.relance)],['Statut',t.statut||'—'],
     ['Priorité',t.priorite||'—'],['Commentaires',t.commentaires||'—'],
   ].map(([l,v])=>`<div class="di"><div class="dl">${l}</div><div class="dv" style="white-space:pre-line">${v}</div></div>`).join('');
   openOv('det');
@@ -1679,15 +1684,15 @@ async function addTache(){
   if(!act){toast('⚠️ Activité requise','#c0392b');return;}
   const btn=document.querySelector('#ov-at .btn.bg');
   if(btn){btn.disabled=true;btn.textContent='⏳ Enregistrement…';}
-  const t={id:genId(), activite:act, commission:g('at-commission').value,
+  const t={_id:null, id:null, activite:act, commission:g('at-commission').value,
     responsable:g('at-responsable').value.trim(),
-    date_debut:g('at-date_debut').value?toFR(g('at-date_debut').value):null,
-    date_fin:g('at-date_fin').value?toFR(g('at-date_fin').value):null,
+    date_debut:g('at-date_debut').value||null,
+    date_fin:g('at-date_fin').value||null,
     statut:g('at-statut').value, relance:g('at-relance')?.value||null, priorite:g('at-priorite').value,
     commentaires:g('at-commentaires').value.trim(),
   };
   const sbId=await sbIT(t);
-  if(sbId&&sbId!==true) t._id=sbId;
+  if(sbId){t._id=sbId; t.id=sbId;}
   T.push(t);
   if(btn){btn.disabled=false;btn.textContent='✅ Enregistrer';}
   closeOv('at'); refreshTaches();
@@ -1700,11 +1705,11 @@ function editTache(idx){
   g('et-activite').value=t.activite||'';
   g('et-commission').value=t.commission||'Secrétariat';
   g('et-responsable').value=t.responsable||'';
-  g('et-date_debut').value=toISO(t.date_debut);
-  g('et-date_fin').value=toISO(t.date_fin);
+  g('et-date_debut').value=t.date_debut||'';
+  g('et-date_fin').value=t.date_fin||'';
   g('et-statut').value=t.statut||'À faire';
   g('et-priorite').value=t.priorite||'Moyenne';
-  g('et-relance').value=t.relance?toISO(t.relance):'';
+  g('et-relance').value=t.relance||'';
   g('et-commentaires').value=t.commentaires||'';
   openOv('et');
 }
@@ -1713,8 +1718,8 @@ g('et-ok').addEventListener('click',async()=>{
   T[etiIdx].activite    = g('et-activite').value.trim();
   T[etiIdx].commission  = g('et-commission').value;
   T[etiIdx].responsable = g('et-responsable').value.trim();
-  T[etiIdx].date_debut  = g('et-date_debut').value ? toFR(g('et-date_debut').value) : null;
-  T[etiIdx].date_fin    = g('et-date_fin').value    ? toFR(g('et-date_fin').value)    : null;
+  T[etiIdx].date_debut  = g('et-date_debut').value||null;
+  T[etiIdx].date_fin    = g('et-date_fin').value||null;
   T[etiIdx].statut      = g('et-statut').value;
   T[etiIdx].priorite    = g('et-priorite').value;
   T[etiIdx].relance      = g('et-relance')?.value||null;
@@ -1737,8 +1742,8 @@ function confirmDel(type,idx){
       const ok=await sbDM(_id,nom,prenom);
       toast(ok?'🗑️ Membre supprimé de Supabase.':'🗑️ Supprimé localement (Supabase KO)',ok?'#0e7a45':'#b07d0a');
     } else {
-      const{id,_id}=T[idx]; T.splice(idx,1); refreshTaches();
-      const ok=await sbDT(id,_id);
+      const{_id}=T[idx]; T.splice(idx,1); refreshTaches();
+      const ok=await sbDT(null,_id);
       toast(ok?'🗑️ Tâche supprimée de Supabase.':'🗑️ Supprimée localement (Supabase KO)',ok?'#0e7a45':'#b07d0a');
     }
     closeOv('del');
