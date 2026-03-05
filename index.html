@@ -713,7 +713,7 @@ if('serviceWorker' in navigator){
       <div class="fr"><label>Quartier d'origine</label><input id="em-quartier"></div>
       <div class="fr"><label>Date d'inscription</label><input id="em-date_inscription" type="date"></div>
       <div class="fr"><label>Participation bureau</label><select id="em-direction"><option value="Non">Non</option><option value="Oui">Oui</option></select></div>
-      <div class="fr"><label>Vérification</label><select id="em-verification"><option value="Non vérifié">Non vérifié</option><option value="Vérifié">Vérifié ✅</option></select></div>
+
     </div>
     <div class="fa">
       <button class="btn bgh" onclick="closeOv('em')">Annuler</button>
@@ -1319,7 +1319,7 @@ function initSelects(){
 
 function applyFM(){
   const q=g('s1').value.toLowerCase().trim();
-  const es=akM||g('f1s').value, ed=g('f1d').value, ex=g('f1x').value, ev=g('f1v').value, ea=g('f1a').value;
+  const es=akM||g('f1s').value, ex=g('f1x')?.value||'', ev=g('f1v').value, ea=g('f1a').value;
   fM=M.filter(r=>{
     if(q&&![r.nom,r.prenom,r.ville,r.specialite,r.quartier].join(' ').toLowerCase().includes(q))return false;
     if(es&&r.statut!==es)return false;
@@ -1335,13 +1335,12 @@ function applyFM(){
 
 function applyFM2(){
   const q=g('s2').value.toLowerCase().trim();
-  const es=g('f2s').value, ev=g('f2v').value, eq=g('f2q').value, ed=g('f2d').value, ea=g('f2a').value;
+  const es=g('f2s').value, ev=g('f2v').value, eq=g('f2q').value, ea=g('f2a').value;
   fM2=M.filter(r=>{
     if(q&&![r.nom,r.prenom,r.ville,r.specialite,r.quartier,r.email].join(' ').toLowerCase().includes(q))return false;
     if(es&&r.statut!==es)return false;
     if(ev&&r.ville!==ev)return false;
     if(eq&&r.quartier!==eq)return false;
-    if(ed&&r.direction!==ed)return false;
     if(ea&&r.annee_arrivee!==ea)return false;
     return true;
   });
@@ -1391,7 +1390,7 @@ function renderT1(){
         </div>
       </td>
     </tr>`;
-  }).join('') : `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--mu)">Aucun résultat</td></tr>`;
+  }).join('') : `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--mu)">Aucun résultat</td></tr>`;
   renderPag('pg1',fM.length,p1,v=>{p1=v;renderT1();});
 }
 
@@ -1427,7 +1426,7 @@ function renderT2(){
         </div>
       </td>
     </tr>`;
-  }).join('') : `<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--mu)">Aucun résultat</td></tr>`;
+  }).join('') : `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--mu)">Aucun résultat</td></tr>`;
   renderPag('pg2',fM2.length,p2,v=>{p2=v;renderT2();});
 }
 
@@ -1547,7 +1546,7 @@ function updateMap(){
       return L.divIcon({html:`<div style="width:${sz}px;height:${sz}px;border-radius:50%;background:#0e7a45;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${cnt>9?13:14}px;color:#fff;font-family:'DM Sans',sans-serif">${cnt}</div>`,className:'',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});
     }
   });
-  const fs=g('mfs').value,fd=g('mfd').value,fq=g('mfq').value,q=(g('ms').value||'').toLowerCase().trim();
+  const fs=g('mfs').value,fq=g('mfq').value,q=(g('ms').value||'').toLowerCase().trim();
   M.filter(r=>{
     if(fs&&r.statut!==fs)return false;
     if(fq&&r.quartier!==fq)return false;
@@ -1619,7 +1618,7 @@ async function addMembre(){
     telephone:g('am-telephone').value.trim(), email:g('am-email').value.trim(),
     annee_arrivee:g('am-annee_arrivee').value, statut:g('am-statut').value,
     specialite:g('am-specialite').value.trim(), quartier:g('am-quartier').value.trim(),
-    direction:g('am-direction')?.value||'Non', verification:'Non vérifié',
+    direction:g('am-direction')?.value||'Non',
     date_inscription:diVal,
   };
   const sbId=await sbIM(m);
