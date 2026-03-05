@@ -1780,7 +1780,14 @@ function envoyerNotifTache(prefix, tache){
     'Cordialement,\n' +
     'Association des Kébémerois de France — AKF'
   );
-  window.location.href = `mailto:${emails}?subject=${sujet}&body=${corps}`;
+  // Créer un lien <a> temporaire et simuler un clic — fonctionne sur tous les navigateurs
+  const a = document.createElement('a');
+  a.href = `mailto:${emails}?subject=${sujet}&body=${corps}`;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>document.body.removeChild(a), 200);
   // Reset sélection
   notifSelected[prefix] = [];
   renderNotifSelected(prefix);
