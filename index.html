@@ -306,14 +306,27 @@ tbody td{padding:9px 12px;vertical-align:middle}
 .ldtxt{color:rgba(255,255,255,.8);font-size:.85rem;font-weight:500}
 
 /* ── CR intégré ── */
-.cr-section{margin-bottom:24px}
+.cr-section{margin-bottom:16px}
 .cr-draggable{cursor:move}
 .cr-dragging{opacity:.7;outline:1px dashed #9aa3af}
 .cr-drop{height:0;border-top:2px solid #00853F;margin:4px 0}
 #cr-content [contenteditable]:focus{outline:1px dashed rgba(0,133,63,.4);border-radius:3px}
+#cr-content{font-family:'Aptos','Helvetica Neue',Arial,sans-serif;font-size:11pt;color:#1a1a1a;line-height:1.5}
+#cr-content h2{font-family:'Montserrat',sans-serif!important;font-size:14pt!important;font-weight:700;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin:14px 0 6px 0!important}
+#cr-content h3{font-family:'Montserrat',sans-serif!important;font-size:12pt!important;font-weight:600;color:#1E40AF;margin:10px 0 4px 0!important}
+#cr-content p{font-family:'Aptos','Helvetica Neue',Arial,sans-serif;font-size:11pt;margin:4px 0 6px 0!important;line-height:1.5}
+#cr-content ul{margin:4px 0 6px 20px!important;padding:0}
+#cr-content li{font-family:'Aptos','Helvetica Neue',Arial,sans-serif;font-size:11pt;margin:2px 0!important;line-height:1.5}
+#cr-content td{font-family:'Aptos','Helvetica Neue',Arial,sans-serif;font-size:11pt}
 @media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   .sb,.topbar,.ta,.pag,.tcard,.tw-wrap,.ldov,.tools,#cr-wrapper > div:first-child{display:none!important}
-  #cr-content{padding:0!important}
+  #cr-content{padding:10mm 14mm!important;font-size:11pt!important}
+  #cr-content h2{font-size:14pt!important;font-family:'Montserrat',sans-serif!important;color:#1E40AF!important;border-left:5px solid #00853F!important;padding-left:12px!important;margin:14px 0 6px!important}
+  #cr-content h3{font-size:12pt!important;font-family:'Montserrat',sans-serif!important;color:#1E40AF!important;margin:10px 0 4px!important}
+  #cr-content p,#cr-content li,#cr-content td{font-size:11pt!important}
+  #cr-content table{width:100%!important;border-collapse:collapse!important}
+  #cr-content th{background:#1E40AF!important;color:#fff!important}
 }
 
   </style>
@@ -661,7 +674,8 @@ if('serviceWorker' in navigator){
   <div class="topbar">
     <div class="tt"><h1>Compte Rendu de Réunion</h1><p>Éditeur · AKF 2026</p></div>
     <div class="ta">
-      <button class="btn bgh" onclick="printCR()">📄 PDF</button>
+      <button class="btn bgh" style="font-size:.74rem;padding:5px 10px" onclick="printCR()">📄 PDF</button>
+      <button class="btn bgh" style="font-size:.74rem;padding:5px 10px" onclick="exportWord()">📝 Word</button>
       <button class="btn bg" id="btn-save-cr" onclick="saveCR()">💾 Sauvegarder</button>
     </div>
   </div>
@@ -676,16 +690,16 @@ if('serviceWorker' in navigator){
       <button class="btn br" style="font-size:.74rem;padding:5px 10px;margin-left:auto" onclick="crReset()" title="Remet le CR à son état par défaut et efface la version Supabase">🔄 Réinitialiser</button>
     </div>
     <!-- Contenu CR éditable -->
-    <div id="cr-content" style="padding:24px 32px;font-family:'Aptos','Helvetica Neue',Arial,sans-serif;color:#333;line-height:1.6">
+    <div id="cr-content" style="padding:20px 28px;">
 
-      <div style="display:flex;flex-direction:column;align-items:center;border-bottom:2px solid #FDEF42;padding-bottom:12px;margin-bottom:20px">
-        <img src="https://i.postimg.cc/MG6xqtLp/8f8dd0a7_ae8f_4fbc_8820_8ada8583a6f8.jpg" alt="Logo AKF" style="max-width:90px;height:auto;margin-bottom:6px">
-        <h1 id="cr-titre" contenteditable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF;margin:4px 0;text-align:center;font-size:1.2rem">COMPTE RENDU DE RÉUNION (N°10)</h1>
-        <p contenteditable="true" style="margin:0;color:#00853F;font-weight:600;font-family:'Montserrat',sans-serif;font-size:.88rem;text-align:center">ASSOCIATION DES KEBEMEROIS DE FRANCE (A.K.F)</p>
+      <div style="display:flex;flex-direction:column;align-items:center;border-bottom:3px solid #FDEF42;padding-bottom:10px;margin-bottom:14px">
+        <img src="https://i.postimg.cc/MG6xqtLp/8f8dd0a7_ae8f_4fbc_8820_8ada8583a6f8.jpg" alt="Logo AKF" style="max-width:80px;height:auto;margin-bottom:4px">
+        <h1 id="cr-titre" contenteditable="true" style="font-family:'Montserrat',sans-serif;font-size:14pt;font-weight:800;color:#1E40AF;margin:4px 0;text-align:center">COMPTE RENDU DE RÉUNION (N°10)</h1>
+        <p contenteditable="true" style="margin:2px 0;color:#00853F;font-weight:700;font-family:'Montserrat',sans-serif;font-size:11pt;text-align:center">ASSOCIATION DES KEBEMEROIS DE FRANCE (A.K.F)</p>
       </div>
 
       <section class="cr-section cr-draggable" draggable="true">
-        <h2 contenteditable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin-top:0">1. INFORMATIONS GÉNÉRALES</h2>
+        <h2 contenteditable="true">1. INFORMATIONS GÉNÉRALES</h2>
         <ul>
           <li contenteditable="true"><strong>Date :</strong> Dimanche 1er Mars 2026</li>
           <li contenteditable="true"><strong>Horaire :</strong> 13h00 à 14h30</li>
@@ -694,13 +708,13 @@ if('serviceWorker' in navigator){
       </section>
 
       <section class="cr-section cr-draggable" draggable="true">
-        <h2 contenteditable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin-top:0">2. ETAT DES PRESENCES</h2>
-        <h3 contenteditable="true" class="cr-draggable" draggable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF">Étaient présents :</h3>
+        <h2 contenteditable="true">2. ETAT DES PRESENCES</h2>
+        <h3 contenteditable="true" class="cr-draggable" draggable="true">Étaient présents :</h3>
         <p contenteditable="true">M. BA, I. SYLL, M. DIOP, S. NIANG, M.K. MBENGUE, A.B. KHOUMA, E.H.C. FAYE, A. DIENG, M.A. FALL, F. KEBE, I. DIOP, M. DIOP, S.D. GUISSE, M. KEBE, F. GUEYE, M.S. KEBE, S. NDIAYE, M.T. DIENG, I. GUEYE, M. THIAM.</p>
       </section>
 
       <section class="cr-section cr-draggable" draggable="true">
-        <h2 contenteditable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin-top:0">3. ORDRE DU JOUR</h2>
+        <h2 contenteditable="true">3. ORDRE DU JOUR</h2>
         <ul>
           <li contenteditable="true">Organisation des outils de travail (Drive et Tableau de bord)</li>
           <li contenteditable="true">Fonctionnement interne et feuilles de route des commissions</li>
@@ -710,10 +724,10 @@ if('serviceWorker' in navigator){
       </section>
 
       <section class="cr-section cr-draggable" draggable="true">
-        <h2 contenteditable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin-top:0">4. DÉROULEMENT DE LA SÉANCE</h2>
+        <h2 contenteditable="true">4. DÉROULEMENT DE LA SÉANCE</h2>
         <p contenteditable="true">Le Président ouvre la séance et rappelle l'importance du respect du temps de parole et de la structuration des travaux des commissions.</p>
 
-        <h3 contenteditable="true" class="cr-draggable" draggable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF">4.1 Secrétariat général</h3>
+        <h3 contenteditable="true" class="cr-draggable" draggable="true">4.1 Secrétariat général</h3>
         <p contenteditable="true">Le Secrétariat a présenté l'architecture du Drive collaboratif et du Tableau de Bord (TDB). Il s'établit comme le pivot administratif de l'A.K.F, garantissant la traçabilité des décisions et la circulation de l'information.</p>
         <ul>
           <li contenteditable="true"><strong>Organisation :</strong> structuration en deux niveaux avec un pilotage stratégique (SG/SGA) et des pôles opérationnels (Fichier membres, PV, Archives).</li>
@@ -722,10 +736,10 @@ if('serviceWorker' in navigator){
           <li contenteditable="true"><strong>Point de vigilance :</strong> améliorer la structuration des comptes rendus pour une meilleure traçabilité.</li>
         </ul>
 
-        <h3 contenteditable="true" class="cr-draggable" draggable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF">4.2 Trésorier et commissariat aux comptes</h3>
+        <h3 contenteditable="true" class="cr-draggable" draggable="true">4.2 Trésorier et commissariat aux comptes</h3>
         <p contenteditable="true">Écrire ici…</p>
 
-        <h3 contenteditable="true" class="cr-draggable" draggable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF">4.3 Relations extérieures</h3>
+        <h3 contenteditable="true" class="cr-draggable" draggable="true">4.3 Relations extérieures</h3>
         <ul>
           <li contenteditable="true">Rôle stratégique dans la légitimité et le financement de l'A.K.F.</li>
           <li contenteditable="true">Ciblage prioritaire des mairies françaises, du Consulat du Sénégal et des Dahiras.</li>
@@ -733,14 +747,14 @@ if('serviceWorker' in navigator){
           <li contenteditable="true">Utilisation de reportages terrain («&nbsp;preuves par l'image&nbsp;») pour renforcer la crédibilité auprès des donateurs.</li>
         </ul>
 
-        <h3 contenteditable="true" class="cr-draggable" draggable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF">4.4 Communication</h3>
+        <h3 contenteditable="true" class="cr-draggable" draggable="true">4.4 Communication</h3>
         <ul>
           <li contenteditable="true">Pôle structuré en quatre unités : Responsable - Community Manager - Création - Presse.</li>
           <li contenteditable="true">Feuille de route : identité visuelle (T1), crédibilité (T2), connexion avec Kébémer (T3), rayonnement (T4).</li>
           <li contenteditable="true">Rappel : la communication est stratégique pour le développement de l'Association et est au service des autres commissions.</li>
         </ul>
 
-        <h3 contenteditable="true" class="cr-draggable" draggable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF">4.5 Commission sociale et éducative</h3>
+        <h3 contenteditable="true" class="cr-draggable" draggable="true">4.5 Commission sociale et éducative</h3>
         <ul>
           <li contenteditable="true"><strong>Pôle Éducatif :</strong> Campagnes de collecte pour les écoles prioritaires de Kébémer.</li>
           <li contenteditable="true">Mise en place de classes virtuelles animées par la diaspora.</li>
@@ -750,12 +764,12 @@ if('serviceWorker' in navigator){
           <li contenteditable="true">Envoi de matériel médical et de denrées aux centres de santé et familles vulnérables de Kébémer.</li>
         </ul>
 
-        <h3 contenteditable="true" class="cr-draggable" draggable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF">4.6 Écrire ici…</h3>
+        <h3 contenteditable="true" class="cr-draggable" draggable="true">4.6 Écrire ici…</h3>
         <p contenteditable="true">Écrire ici…</p>
       </section>
 
       <section class="cr-section cr-draggable" draggable="true">
-        <h2 contenteditable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin-top:0">5. DÉCISIONS PRISES</h2>
+        <h2 contenteditable="true">5. DÉCISIONS PRISES</h2>
         <ul>
           <li contenteditable="true">Démarrage immédiat des activités.</li>
           <li contenteditable="true">Reconnaissance administrative.</li>
@@ -764,23 +778,23 @@ if('serviceWorker' in navigator){
       </section>
 
       <section class="cr-section cr-draggable" draggable="true">
-        <h2 contenteditable="true" style="font-family:'Montserrat',sans-serif;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin-top:0">6. ACTIONS À MENER</h2>
-        <table id="cr-actionsTable" style="width:100%;border-collapse:collapse;margin-top:12px">
+        <h2 contenteditable="true">6. ACTIONS À MENER</h2>
+        <table id="cr-actionsTable" style="width:100%;border-collapse:collapse;margin-top:8px">
           <thead><tr>
-            <th style="background:#1E40AF;color:#fff;padding:10px;border:1px solid #ddd;font-family:'Montserrat',sans-serif">Responsable</th>
-            <th style="background:#1E40AF;color:#fff;padding:10px;border:1px solid #ddd;font-family:'Montserrat',sans-serif">Action</th>
+            <th style="background:#1E40AF;color:#fff;padding:8px 10px;border:1px solid #ddd;font-family:'Montserrat',sans-serif;font-size:11pt">Responsable</th>
+            <th style="background:#1E40AF;color:#fff;padding:8px 10px;border:1px solid #ddd;font-family:'Montserrat',sans-serif;font-size:11pt">Action</th>
           </tr></thead>
           <tbody>
-            <tr><td contenteditable="true" style="padding:10px;border:1px solid #ddd">Secrétariat</td><td contenteditable="true" style="padding:10px;border:1px solid #ddd">Démarches officielles</td></tr>
-            <tr style="background:#f2f2f2"><td contenteditable="true" style="padding:10px;border:1px solid #ddd">Communication</td><td contenteditable="true" style="padding:10px;border:1px solid #ddd">Pages officielles / stratégie</td></tr>
-            <tr><td contenteditable="true" style="padding:10px;border:1px solid #ddd">Trésorerie</td><td contenteditable="true" style="padding:10px;border:1px solid #ddd">Relance cotisations</td></tr>
+            <tr><td contenteditable="true" style="padding:8px 10px;border:1px solid #ddd">Secrétariat</td><td contenteditable="true" style="padding:8px 10px;border:1px solid #ddd">Démarches officielles</td></tr>
+            <tr style="background:#f2f2f2"><td contenteditable="true" style="padding:8px 10px;border:1px solid #ddd">Communication</td><td contenteditable="true" style="padding:8px 10px;border:1px solid #ddd">Pages officielles / stratégie</td></tr>
+            <tr><td contenteditable="true" style="padding:8px 10px;border:1px solid #ddd">Trésorerie</td><td contenteditable="true" style="padding:8px 10px;border:1px solid #ddd">Relance cotisations</td></tr>
           </tbody>
         </table>
       </section>
 
-      <div style="display:flex;justify-content:space-between;margin-top:40px;padding-top:16px;border-top:1px solid #ccc">
-        <div contenteditable="true"><h3 style="font-family:'Montserrat',sans-serif;color:#1E40AF">Le Président</h3><p>DIOP Mor</p></div>
-        <div contenteditable="true"><h3 style="font-family:'Montserrat',sans-serif;color:#1E40AF">Le Secrétaire Général</h3><p>SYLL Ibrahima</p></div>
+      <div style="display:flex;justify-content:space-between;margin-top:28px;padding-top:12px;border-top:1px solid #ccc">
+        <div contenteditable="true"><h3 style="font-family:'Montserrat',sans-serif;font-size:12pt;color:#1E40AF;margin:0 0 4px">Le Président</h3><p style="margin:0;font-size:11pt">DIOP Mor</p></div>
+        <div contenteditable="true"><h3 style="font-family:'Montserrat',sans-serif;font-size:12pt;color:#1E40AF;margin:0 0 4px">Le Secrétaire Général</h3><p style="margin:0;font-size:11pt">SYLL Ibrahima</p></div>
       </div>
 
     </div><!-- /cr-content -->
@@ -1182,16 +1196,77 @@ async function sbDT(id,_id){
 }
 
 // ─── CRUD CR ─────────────────────────────────────────────────────
+function crPrintStyles(){
+  return `
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
+    *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{font-family:'Aptos','Helvetica Neue',Arial,sans-serif;font-size:11pt;color:#1a1a1a;line-height:1.5;margin:0;padding:12mm 16mm}
+    h1{font-family:'Montserrat',sans-serif;font-size:14pt;font-weight:800;color:#1E40AF;text-align:center;margin:4px 0}
+    h2{font-family:'Montserrat',sans-serif;font-size:14pt;font-weight:700;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin:12px 0 5px}
+    h3{font-family:'Montserrat',sans-serif;font-size:12pt;font-weight:600;color:#1E40AF;margin:8px 0 3px}
+    p{font-size:11pt;margin:3px 0 5px;line-height:1.5}
+    ul{margin:3px 0 5px 20px;padding:0}
+    li{font-size:11pt;margin:2px 0;line-height:1.5}
+    .cr-section{margin-bottom:14px}
+    table{width:100%;border-collapse:collapse;margin-top:6px}
+    th{background:#1E40AF!important;color:#fff!important;padding:7px 10px;border:1px solid #ddd;font-family:'Montserrat',sans-serif;font-size:11pt}
+    td{padding:7px 10px;border:1px solid #ddd;font-size:11pt}
+    tr:nth-child(even){background:#f7f7f7}
+    .sig{display:flex;justify-content:space-between;margin-top:24px;padding-top:12px;border-top:1px solid #ccc}
+    img{max-width:80px}
+    .hdr{display:flex;flex-direction:column;align-items:center;border-bottom:3px solid #FDEF42;padding-bottom:8px;margin-bottom:12px}
+    .hdr-sub{color:#00853F;font-weight:700;font-family:'Montserrat',sans-serif;font-size:11pt;text-align:center;margin:2px 0}
+  `;
+}
+
 function printCR(){
   const w=window.open('','_blank');
   const c=g('cr-content').innerHTML;
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CR AKF</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
-  <style>body{font-family:'Aptos','Helvetica Neue',Arial,sans-serif;color:#333;padding:20px;max-width:900px;margin:0 auto}
-  h1,h2,h3{font-family:'Montserrat',sans-serif;color:#1E40AF}
-  table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:10px}
-  th{background:#1E40AF;color:#fff}.cr-section{margin-bottom:24px}</style></head><body>${c}</body></html>`);
-  w.document.close(); w.focus(); setTimeout(()=>w.print(),400);
+  <style>${crPrintStyles()}</style></head><body>${c}</body></html>`);
+  w.document.close(); w.focus(); setTimeout(()=>w.print(),600);
+}
+
+function exportWord(){
+  const titre=(g('cr-titre')?.textContent||'Compte Rendu AKF').trim();
+  const c=g('cr-content').innerHTML;
+  // Construction du HTML Word avec styles embarqués
+  const html=`<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content='Microsoft Word 15'>
+<meta name=Originator content='Microsoft Word 15'>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>90</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+  @font-face{font-family:'Montserrat'}
+  body{font-family:Arial,sans-serif;font-size:11pt;color:#1a1a1a;line-height:1.5;margin:2cm 2.5cm}
+  h1{font-family:'Montserrat',Arial,sans-serif;font-size:14pt;font-weight:800;color:#1E40AF;text-align:center;mso-style-name:'Titre CR'}
+  h2{font-family:'Montserrat',Arial,sans-serif;font-size:14pt;font-weight:700;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin-top:12pt;mso-style-name:'Section CR'}
+  h3{font-family:'Montserrat',Arial,sans-serif;font-size:12pt;font-weight:600;color:#1E40AF;margin-top:8pt;mso-style-name:'Sous-section CR'}
+  p{font-size:11pt;margin:3pt 0;line-height:1.5}
+  ul{margin:3pt 0 5pt 20pt;padding:0}
+  li{font-size:11pt;margin:2pt 0}
+  table{border-collapse:collapse;width:100%;margin-top:6pt}
+  th{background:#1E40AF;color:#fff;padding:7pt 10pt;border:1pt solid #ddd;font-family:'Montserrat',Arial,sans-serif;font-size:11pt}
+  td{padding:7pt 10pt;border:1pt solid #ddd;font-size:11pt}
+  .cr-section{margin-bottom:12pt}
+  img{max-width:80pt}
+</style>
+</head>
+<body>${c}</body></html>`;
+
+  const blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`CR_AKF_${new Date().toISOString().slice(0,10)}.doc`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast('✅ Export Word téléchargé !','#0e7a45');
 }
 
 async function saveCR(){
@@ -1226,8 +1301,8 @@ async function crReset(){
 function crSel(){const s=window.getSelection();if(!s||!s.rangeCount)return null;const n=s.anchorNode;return n.nodeType===3?n.parentNode:n;}
 function crClosest(el,sel){while(el&&el.nodeType===1){if(el.matches&&el.matches(sel))return el;el=el.parentNode;}return null;}
 function crSection(){let n=crSel(),c=n;while(c&&c.id!=='cr-content'&&!c.classList?.contains('cr-section'))c=c.parentNode;return c&&c.id!=='cr-content'?c:null;}
-function crH2style(){return "font-family:'Montserrat',sans-serif;color:#1E40AF;border-left:5px solid #00853F;padding-left:12px;margin-top:0";}
-function crH3style(){return "font-family:'Montserrat',sans-serif;color:#1E40AF";}
+function crH2style(){return "";}
+function crH3style(){return "";}
 
 function crAddSection(){
   const s=document.createElement('section');
