@@ -78,21 +78,20 @@
     .hero-text{flex:1;min-width:260px}
     .hero-title{font-family:"Montserrat",sans-serif;font-weight:800;line-height:1.1;margin:0 0 10px;font-size:clamp(1.8rem,3vw,2.4rem);color:var(--akf-vert)}
     .hero-sub{color:var(--mut);font-size:clamp(.98rem,1.6vw,1.05rem);margin:0}
-    .tabs{max-width:1100px;margin:14px auto 0;display:flex;gap:10px;flex-wrap:wrap;padding:0 16px 10px}
-    .tabs-row1{justify-content:center;padding-bottom:8px;margin-bottom:0}
-    .tabs-row2{padding-top:0;margin-top:0;margin-bottom:0;padding-bottom:22px}
+    .tabs{max-width:1100px;margin:0 auto;display:flex;gap:10px;flex-wrap:wrap;padding:0 16px 22px}
+    .tabs-row1{display:none}
+    .tabs-row2{padding-top:10px}
     .tab{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--wh);box-shadow:var(--sh);text-decoration:none;color:var(--ink);font-weight:700;font-size:.96rem;border:2px solid transparent;transition:all .2s}
     .tab:hover{transform:translateY(-1px);border-color:var(--akf-bleu)}
+    /* Bouton Rejoignez-nous fixe en haut à droite */
+    .btn-join-fixed{position:fixed;top:14px;right:14px;z-index:500;display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:12px;background:linear-gradient(135deg,#1E40AF,#2563eb);color:#fff;font-weight:800;font-size:.9rem;font-family:"DM Sans",sans-serif;text-decoration:none;box-shadow:0 4px 18px rgba(30,64,175,.35);border:none;cursor:pointer;animation:pulse-join 2.5s ease-in-out infinite;transition:transform .15s}
+    .btn-join-fixed:hover{transform:translateY(-1px);filter:brightness(1.08)}
+    @keyframes pulse-join{0%,100%{box-shadow:0 4px 18px rgba(30,64,175,.30)}50%{box-shadow:0 6px 26px rgba(30,64,175,.55)}}
     .chip{font-size:.7rem;font-weight:800;padding:3px 8px;border-radius:999px;color:#fff}
     .chip.ig{background:#E4405F}.chip.tk{background:#000}.chip.fb{background:#1877F2}
     .chip.pdf{background:linear-gradient(135deg,#E31B23,#b01017)}
     .tab.tab-pdf{border:2px solid #fde8e8;background:linear-gradient(135deg,#fff5f5,#fff);animation:pulse-pdf 2.5s ease-in-out infinite}
     @keyframes pulse-pdf{0%,100%{box-shadow:0 6px 24px rgba(227,27,35,.08)}50%{box-shadow:0 6px 24px rgba(227,27,35,.22)}}
-    .tab.tab-join{border:2px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#fff);animation:pulse-join 2.5s ease-in-out infinite;padding:14px 40px;min-width:320px;justify-content:center;gap:14px}
-    .tab.tab-join .chip.join{font-size:.85rem;padding:5px 14px}
-    .tab.tab-join span:last-child{font-size:1.05rem;font-weight:800;color:var(--akf-bleu)}
-    @keyframes pulse-join{0%,100%{box-shadow:0 6px 24px rgba(30,64,175,.10)}50%{box-shadow:0 8px 28px rgba(30,64,175,.28)}}
-    .chip.join{background:linear-gradient(135deg,#1E40AF,#2563eb)}
     /* Modal PDF viewer */
     .pdf-modal-ov{position:fixed;inset:0;background:rgba(15,23,42,.75);display:none;align-items:center;justify-content:center;z-index:9999}
     .pdf-modal-ov.open{display:flex}
@@ -411,6 +410,9 @@ if('serviceWorker' in navigator){
 ══════════════════════════════════════════════════════ -->
 <div id="page-public">
 
+  <!-- Bouton Rejoignez-nous fixe en haut à droite -->
+  <button class="btn-join-fixed" onclick="document.getElementById('details-inscription').open=true;document.getElementById('details-inscription').scrollIntoView({behavior:'smooth'})">🧭 Rejoignez-nous</button>
+
   <!-- Bouton Admin (déplacé en bas) -->
 
   <!-- Modal mot de passe -->
@@ -437,13 +439,6 @@ if('serviceWorker' in navigator){
         <h1 class="hero-title">Association des Kébémerois de France (AKF)</h1>
         <p class="hero-sub">Rassembler la communauté kébémeroise en France autour de l'entraide, la solidarité et le partage culturel. Participez à nos événements et renforcez les liens avec notre ville d'origine, Kébémer.</p>
       </div>
-    </div>
-    <!-- Ligne 1 : Rejoignez-nous centré seul -->
-    <div class="tabs tabs-row1">
-      <a class="tab tab-join" href="#" onclick="document.getElementById('details-inscription').open=true;document.getElementById('details-inscription').scrollIntoView({behavior:'smooth'});return false;">
-        <span class="chip join">🧭 Rejoignez-nous</span>
-        <span>Devenez membre AKF</span>
-      </a>
     </div>
     <!-- Ligne 2 : Réseaux sociaux + En savoir plus -->
     <div class="tabs tabs-row2">
