@@ -420,11 +420,14 @@ if('serviceWorker' in navigator){
     <div class="modal-pub">
       <h3>Accès administrateur</h3>
       <p style="margin:0 0 12px;color:#4b5563">Mot de passe requis pour accéder au tableau de bord.</p>
+      <label for="admEmail">Adresse email</label>
+      <input id="admEmail" type="email" placeholder="admin@akf.fr" autocomplete="email" style="margin-bottom:10px"/>
       <label for="admPwd">Mot de passe</label>
       <input id="admPwd" type="password" placeholder="••••••••" autocomplete="current-password" />
+      <p id="admError" style="color:#E31B23;font-size:.88rem;margin:6px 0 0;display:none">Email ou mot de passe incorrect.</p>
       <div class="actions">
         <button class="pub-btn alt" id="admClose" type="button">Annuler</button>
-        <button class="pub-btn" id="admEnter" type="button">Entrer</button>
+        <button class="pub-btn" id="admEnter" type="button">Connexion</button>
       </div>
     </div>
   </div>
@@ -1117,37 +1120,45 @@ admClose.addEventListener('click',()=>adminOv.classList.remove('open'));
 adminOv.addEventListener('click',e=>{if(e.target===adminOv)adminOv.classList.remove('open');});
 admEnter.addEventListener('click',checkAdmin);
 admPwdInp.addEventListener('keydown',e=>{if(e.key==='Enter')checkAdmin();if(e.key==='Escape')adminOv.classList.remove('open');});
+const admEmailInp = document.getElementById('admEmail');
+if(admEmailInp) admEmailInp.addEventListener('keydown',e=>{if(e.key==='Enter')checkAdmin();if(e.key==='Escape')adminOv.classList.remove('open');});
 
-async function checkAdmin(){
-  const pwd = admPwdInp.value.trim();
-  if(!pwd) return;
+function checkAdmin(){
+  const email = document.getElementById('admEmail').value.trim();
+  const pwd   = admPwdInp.value.trim();
+  const errEl = document.getElementById('admError');
+  errEl.style.display = 'none';
+
+  if(!email || !pwd){
+    errEl.textContent = 'Veuillez remplir email et mot de passe.';
+    errEl.style.display = 'block';
+    return;
+  }
 
   admEnter.disabled = true;
   admEnter.textContent = '⏳';
 
-  const { data, error } = await _sbPub.auth.signInWithPassword({
-    email: 'assokebefrance@gmail.com',
-    password: pwd
+  _sbPub.auth.signInWithPassword({ email, password: pwd }).then(({ data, error }) => {
+    admEnter.disabled = false;
+    admEnter.textContent = 'Connexion';
+
+    if (!error && data.user) {
+      errEl.style.display = 'none';
+      adminOv.classList.remove('open');
+      document.getElementById('page-public').style.display = 'none';
+      document.getElementById('page-admin').style.display = 'block';
+      setTimeout(() => { initDashboard(); }, 150);
+    } else {
+      errEl.textContent = 'Email ou mot de passe incorrect.';
+      errEl.style.display = 'block';
+      admPwdInp.value = '';
+      admPwdInp.focus();
+    }
   });
-
-  admEnter.disabled = false;
-  admEnter.textContent = 'Entrer';
-
-  if (!error && data.user) {
-    adminOv.classList.remove('open');
-    document.getElementById('page-public').style.display='none';
-    document.getElementById('page-admin').style.display='block';
-    setTimeout(()=>{ initDashboard(); }, 150);
-  } else {
-    admPwdInp.style.borderColor='#E31B23';
-    admPwdInp.value='';
-    setTimeout(()=>{admPwdInp.style.borderColor='';admPwdInp.focus();},1200);
-    alert('Mot de passe incorrect.');
-  }
 }
 
-async function logout(){
-  await _sbPub.auth.signOut();
+function logout(){
+  _sbPub.auth.signOut();
   document.getElementById('page-admin').style.display='none';
   document.getElementById('page-public').style.display='block';
   _dashboardInited = false;
