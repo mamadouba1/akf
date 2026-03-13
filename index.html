@@ -1562,7 +1562,7 @@ if('serviceWorker' in navigator){
     </div>
     <!-- Bouton Admin en bas -->
     <div style="display:flex;justify-content:center;margin:28px 0 8px">
-      <button class="pub-btn alt" id="adminBtn" type="button" style="padding:10px 28px;font-size:.88rem;opacity:.55;filter:grayscale(.3)">🔒 Tableau de bord</button>
+      <button class="pub-btn alt" id="adminBtn2" type="button" style="padding:10px 28px;font-size:.88rem;opacity:.55;filter:grayscale(.3)" onclick="document.getElementById('adminOv').classList.add('open');document.getElementById('admPwd').value='';setTimeout(()=>document.getElementById('admPwd').focus(),50)">🔒 Tableau de bord</button>
     </div>
     <div class="footer-pub">© <span id="year"></span> AKF – Association des Kébémerois de France · Tous droits réservés</div>
   </main>
@@ -2262,59 +2262,6 @@ document.getElementById('btnRegister').addEventListener('click',async()=>{
   document.getElementById('i_sexe').value='Homme';
   document.getElementById('i_statut').value='Professionnel';
 });
-</script>
-
-<script>
-// ══ NAVBAR ════════════════════════════════════════════
-document.addEventListener('click', e => {
-  const m = document.getElementById('mobileMenu');
-  const b = document.getElementById('burgerBtn');
-  if(m && b && !m.contains(e.target) && !b.contains(e.target)) m.classList.remove('open');
-});
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape') {
-    document.querySelectorAll('.don-modal-ov.open,.carte-modal-ov.open,.pdf-modal-ov.open,.ov-pub.open').forEach(o=>o.classList.remove('open'));
-    document.getElementById('mobileMenu')?.classList.remove('open');
-  }
-});
-
-// ══ MODALS RÉSEAUX + DON ══════════════════════════════
-function openReseauxModal(e){ if(e) e.preventDefault(); document.getElementById('reseauxModalOv').classList.add('open'); }
-function openDonModal(e){ if(e) e.preventDefault(); document.getElementById('donModalOv').classList.add('open'); }
-
-let _donMontant = 20;
-function donSel(val, el){
-  _donMontant = val;
-  document.querySelectorAll('#don-grid > div').forEach(d=>{ d.style.border='2px solid #e2e8f0'; d.style.background='#fff'; });
-  if(el){ el.style.border='2px solid #e67e22'; el.style.background='#fff8f0'; }
-  document.getElementById('don-autre').value = '';
-  document.getElementById('don-lbl').textContent = val+'€';
-}
-function donAutre(inp){
-  const v = parseFloat(inp.value);
-  if(v>0){
-    _donMontant = v;
-    document.querySelectorAll('#don-grid > div').forEach(d=>{ d.style.border='2px solid #e2e8f0'; d.style.background='#fff'; });
-    document.getElementById('don-lbl').textContent = v+'€';
-  }
-}
-async function submitDon(){
-  const nom    = document.getElementById('don-nom')?.value.trim();
-  const prenom = document.getElementById('don-prenom')?.value.trim();
-  const email  = document.getElementById('don-email')?.value.trim();
-  if(!nom||!prenom||!email){ alert('Veuillez remplir nom, prénom et email.'); return; }
-  if(!/\S+@\S+\.\S+/.test(email)){ alert('Email invalide.'); return; }
-  const btn = document.getElementById('btnDonSubmit');
-  btn.disabled=true; btn.textContent='⏳ Enregistrement…';
-  const{error}=await _sbPub.from('dons').insert([{nom,prenom,email,montant:_donMontant,statut:'en_attente'}]);
-  btn.disabled=false;
-  btn.innerHTML='💛 Enregistrer mon don de <span id="don-lbl">'+_donMontant+'€</span>';
-  if(error){ alert('Erreur : '+error.message); return; }
-  try{ await emailjs.send(EMAILJS_SERVICE,TEMPLATE_ADMIN,{name:nom+' '+prenom,email,message:'Nouveau don de '+_donMontant+'€.',time:new Date().toLocaleString('fr-FR')}); }catch(e){console.warn(e);}
-  alert('✅ Don de '+_donMontant+'€ enregistré ! Merci '+prenom+' 🙏\n\nEffectuez maintenant votre paiement via Wero, PayPal ou virement IBAN.\nL\'équipe AKF vous confirmera la réception.');
-  ['don-nom','don-prenom','don-email','don-autre'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('donModalOv').classList.remove('open');
-}
 </script>
 
 <!-- ══ JS DASHBOARD ══ -->
@@ -3482,4 +3429,10 @@ async function initDashboard(){
   document.querySelectorAll('#cr-content p, #cr-content li, #cr-content h1, #cr-content h2, #cr-content h3, #cr-content td').forEach(el => {
     el.setAttribute('contenteditable','true');
   });
-  document.quer
+  document.querySelectorAll('.cr-section').forEach(crMakeDraggable);
+  document.querySelectorAll('#cr-content h3').forEach(h=>{h.classList.add('cr-draggable');h.setAttribute('draggable','true');crMakeDraggable(h);});
+}
+
+</script>
+</body>
+</html>
