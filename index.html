@@ -765,7 +765,7 @@ if('serviceWorker' in navigator){
     <div class="toolbar">
       <div class="sw"><input type="search" id="ts" placeholder="Rechercher…" oninput="applyFT()"></div>
       <select class="flt" id="tfs" onchange="applyFT()"><option value="">Tous statuts</option><option>À faire</option><option>En cours</option><option>Terminée</option><option>Annulé</option><option>Abandonner</option></select>
-      <select class="flt" id="tfc" onchange="applyFT()"><option value="">Toutes commissions</option><option>Présidence</option><option>Secrétariat</option><option>Trésorerie</option><option>Communication</option><option>Organisation</option><option>Social et éducatif</option><option>Relations extérieures</option></select>
+      <select class="flt" id="tfc" onchange="applyFT()"><option value="">Toutes commissions</option><option>Présidence</option><option>Secrétariat</option><option>Trésorerie</option><option>Communication</option><option>Commission Sociale et Educative</option><option>Relations extérieures</option><option>Organisation</option><option>Commissaires aux Comptes</option><option>Sages</option></select>
       <select class="flt" id="tfp" onchange="applyFT()"><option value="">Toutes priorités</option><option>Haute</option><option>Moyenne</option><option>Basse</option></select>
       <span class="rc" id="rct">0 tâches</span>
     </div>
@@ -978,7 +978,7 @@ if('serviceWorker' in navigator){
     <div class="fg">
       <div class="fr full"><label>Activité / Projet *</label><input id="at-activite" placeholder="Nom de la tâche"></div>
       <div class="fr"><label>Commission</label>
-        <select id="at-commission"><option>Présidence</option><option>Secrétariat</option><option>Trésorerie</option><option>Communication</option><option>Organisation</option><option>Social et éducatif</option><option>Relations extérieures</option></select>
+        <select id="at-commission"><option>Présidence</option><option>Secrétariat</option><option>Trésorerie</option><option>Communication</option><option>Commission Sociale et Educative</option><option>Relations extérieures</option><option>Organisation</option><option>Commissaires aux Comptes</option><option>Sages</option></select>
       </div>
       <div class="fr full"><label>Responsable(s)</label><input id="at-responsable" placeholder="Ex : Ibrahima et Fallou…"></div>
       <div class="fr"><label>Date début</label><input id="at-date_debut" type="date"></div>
@@ -1028,7 +1028,7 @@ if('serviceWorker' in navigator){
     <div class="fg">
       <div class="fr full"><label>Activité / Projet *</label><input id="et-activite"></div>
       <div class="fr"><label>Commission</label>
-        <select id="et-commission"><option>Présidence</option><option>Secrétariat</option><option>Trésorerie</option><option>Communication</option><option>Organisation</option><option>Social et éducatif</option><option>Relations extérieures</option></select>
+        <select id="et-commission"><option>Présidence</option><option>Secrétariat</option><option>Trésorerie</option><option>Communication</option><option>Commission Sociale et Educative</option><option>Relations extérieures</option><option>Organisation</option><option>Commissaires aux Comptes</option><option>Sages</option></select>
       </div>
       <div class="fr full"><label>Responsable(s)</label><input id="et-responsable"></div>
       <div class="fr"><label>Date début</label><input id="et-date_debut" type="date"></div>
@@ -1280,10 +1280,10 @@ function _mToSB(m){
   };
 }
 // ── Maps FK taches ──────────────────────────────────────────────
-const COMMISSION_MAP={'Présidence':1,'Secrétariat':2,'Trésorerie':3,'Commissaires aux comptes':4,'Commission Sociale et Educative':5,'Relations extérieurs':6,'Organisation':7,'Sages':8};
+const COMMISSION_MAP={'Présidence':1,'Secrétariat':2,'Trésorerie':3,'Commissaires aux Comptes':4,'Commission Sociale et Educative':5,'Relations extérieures':6,'Organisation':7,'Sages':8,'Communication':9};
 const STATUT_T_MAP={'À faire':1,'En cours':2,'Terminée':3,'Annulée':4,'Annulé':4,'Abandonner':4};
 const PRIORITE_MAP={'Basse':1,'Moyenne':2,'Haute':3,'haute':3};
-const COMMISSION_ID={1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commissaires aux comptes',5:'Commission Sociale et Educative',6:'Relations extérieurs',7:'Organisation',8:'Sages'};
+const COMMISSION_ID={1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commissaires aux Comptes',5:'Commission Sociale et Educative',6:'Relations extérieures',7:'Organisation',8:'Sages',9:'Communication'};
 const STATUT_T_ID={1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'};
 const PRIORITE_ID={1:'Basse',2:'Moyenne',3:'Haute'};
 
@@ -1579,7 +1579,7 @@ function sbRowToTache(r){
     _id:          r.id,
     id:           r.id,
     activite:     r.activite||'',
-    commission:   {1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commissaires aux comptes',5:'Commission Sociale et Educative',6:'Relations extérieurs',7:'Organisation',8:'Sages'}[r.commission_id]||'Secrétariat',
+    commission:   {1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commissaires aux Comptes',5:'Commission Sociale et Educative',6:'Relations extérieures',7:'Organisation',8:'Sages',9:'Communication'}[r.commission_id]||'Secrétariat',
     responsable:  r.responsable||'',
     date_debut:   r.date_debut||null,
     date_fin:     r.date_fin||null,
