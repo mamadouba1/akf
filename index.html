@@ -2320,15 +2320,19 @@ function dateSqlT(d){
   return null;
 }
 function _tToSB(t, forUpdate=false){
+  const commissionLabel = t.commission||'Secrétariat';
   const payload={
-    activite:  t.activite||'',
-    responsable: t.responsable||'',
-    date_debut:  t.date_debut||null,
-    date_fin:    t.date_fin||null,
-    relance:     t.relance||null,
-    commentaires:t.commentaires||'',
-    commission_id: COMMISSION_MAP[t.commission]||2,
+    activite:      t.activite||'',
+    responsable:   t.responsable||'',
+    date_debut:    t.date_debut||null,
+    date_fin:      t.date_fin||null,
+    relance:       t.relance||null,
+    commentaires:  t.commentaires||'',
+    commission:    commissionLabel,
+    commission_id: COMMISSION_MAP[commissionLabel]||2,
+    statut:        t.statut||'À faire',
     statut_id:     STATUT_T_MAP[t.statut]||1,
+    priorite:      t.priorite||'Moyenne',
     priorite_id:   PRIORITE_MAP[t.priorite]||2,
   };
   // id auto-généré par Supabase
@@ -2589,13 +2593,13 @@ function sbRowToTache(r){
     _id:          r.id,
     id:           r.id,
     activite:     r.activite||'',
-    commission:   {1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commissaires aux Comptes',5:'Commission Sociale et Educative',6:'Relations extérieures',7:'Organisation',8:'Sages',9:'Communication'}[r.commission_id]||'Secrétariat',
+    commission:   r.commission || {1:'Présidence',2:'Secrétariat',3:'Trésorerie',4:'Commissaires aux Comptes',5:'Commission Sociale et Educative',6:'Relations extérieures',7:'Organisation',8:'Sages',9:'Communication'}[r.commission_id] || 'Secrétariat',
     responsable:  r.responsable||'',
     date_debut:   r.date_debut||null,
     date_fin:     r.date_fin||null,
-    statut:       {1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'}[r.statut_id]||'À faire',
+    statut:       r.statut || {1:'À faire',2:'En cours',3:'Terminée',4:'Annulée'}[r.statut_id] || 'À faire',
     relance:      r.relance||null,
-    priorite:     {1:'Basse',2:'Moyenne',3:'Haute'}[r.priorite_id]||'Moyenne',
+    priorite:     r.priorite || {1:'Basse',2:'Moyenne',3:'Haute'}[r.priorite_id] || 'Moyenne',
     commentaires: r.commentaires||'',
   };
 }
