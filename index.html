@@ -1086,6 +1086,14 @@ if('serviceWorker' in navigator){
     document.getElementById('cmModalTitle').textContent = `🪪 J'achète ma Carte de Membre AKF`;
   }
 
+  function openDonModal(e){
+    if(e) e.preventDefault();
+    document.getElementById('donModalOv').classList.add('open');
+  }
+  function openReseauxModal(e){
+    if(e) e.preventDefault();
+    document.getElementById('reseauxModalOv').classList.add('open');
+  }
   function openCarteMembre(e){
     e.preventDefault();
     // Reset étape 1
