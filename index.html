@@ -48,6 +48,17 @@
   <!-- CDN Supabase + EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <!-- Client Supabase global — utilisé par toute la page -->
+  <script>
+    const _AKF_SB_URL  = 'https://pbhqvmtepipmldfncths.supabase.co';
+    const _AKF_SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiaHF2bXRlcGlwbWxkZm5jdGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MjU3OTAsImV4cCI6MjA4MjAwMTc5MH0.M-0qndrCgH2r3TQDW4I_THvrEYe_nZx51kGKjiF4egg';
+    // Créé une seule fois, partagé entre la page publique ET le dashboard
+    var _sbGlobal = null;
+    function getSB(){
+      if(!_sbGlobal) _sbGlobal = supabase.createClient(_AKF_SB_URL, _AKF_SB_KEY);
+      return _sbGlobal;
+    }
+  </script>
   <!-- CDN Carte Membre -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1068,16 +1079,16 @@ if('serviceWorker' in navigator){
         <p style="font-family:'Montserrat',sans-serif;font-weight:800;color:#00204A;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;margin:14px 0 8px">Envoyer votre cotisation via</p>
 
         <div style="background:#eff6ff;border:1.5px solid #1E40AF;border-radius:10px;padding:11px 14px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center">
-          <div><div style="font-family:'Montserrat',sans-serif;font-weight:800;color:#1E40AF;font-size:.85rem">Wero</div><div style="font-size:.75rem;color:#64748b">AKF/div></div>
-          <div style="font-weight:800;color:#00204A;font-size:.85rem">+33 0 00 00 00 00</div>
+          <div><div style="font-family:'Montserrat',sans-serif;font-weight:800;color:#1E40AF;font-size:.85rem">Wero</div><div style="font-size:.75rem;color:#64748b">Issa GUEYE</div></div>
+          <div style="font-weight:800;color:#00204A;font-size:.85rem">+33 6 67 16 21 87</div>
         </div>
         <div style="background:#fdf4dd;border:1.5px solid #b07d0a;border-radius:10px;padding:11px 14px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center">
-          <div><div style="font-family:'Montserrat',sans-serif;font-weight:800;color:#b07d0a;font-size:.85rem">PayPal</div><div style="font-size:.75rem;color:#64748b;font-style:italic">Envoyerpour l'AKF</div></div>
-          <div style="font-weight:700;font-size:.82rem;color:#0f172a"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e48391819d818d979785a48389858d88ca878b89">Bientôt disponible</a></div>
+          <div><div style="font-family:'Montserrat',sans-serif;font-weight:800;color:#b07d0a;font-size:.85rem">PayPal</div><div style="font-size:.75rem;color:#64748b;font-style:italic">Envoyer en tant qu'ami</div></div>
+          <div style="font-weight:700;font-size:.82rem;color:#0f172a"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e48391819d818d979785a48389858d88ca878b89">[email&#160;protected]</a></div>
         </div>
         <div style="background:#e8f5ee;border:1.5px solid #00853F;border-radius:10px;padding:11px 14px;margin-bottom:14px">
           <div style="font-family:'Montserrat',sans-serif;font-weight:800;color:#00853F;font-size:.85rem;margin-bottom:4px">Revolut — Virement IBAN</div>
-          <div style="font-family:'Courier New',monospace;font-weight:700;font-size:.8rem;color:#00204A">FBientôt disponible</div>
+          <div style="font-family:'Courier New',monospace;font-weight:700;font-size:.8rem;color:#00204A">FR76 2823 3000 0159 7419 9529 132</div>
           <div style="font-size:.68rem;color:#64748b;font-style:italic;margin-top:2px">Indiquer votre nom en référence</div>
         </div>
 
@@ -1318,17 +1329,18 @@ if('serviceWorker' in navigator){
     const section = document.getElementById('section-actions');
     const grid = document.getElementById('actions-grid');
     try {
-      const { data, error } = await _sb.from('actions_realisations')
+      const client = getSB();
+      const { data, error } = await client.from('actions_realisations')
         .select('*').eq('publie', true).order('date_publication', {ascending:false});
       if(error || !data || data.length === 0){
-        section.style.display = 'none'; // rien à afficher, on cache tout
+        section.style.display = 'none';
         return;
       }
       _allActions = data;
       renderActions(_allActions);
-      section.style.display = 'block'; // afficher la section seulement si contenu
+      section.style.display = 'block';
     } catch(e){
-      section.style.display = 'none'; // en cas d'erreur, on cache aussi
+      section.style.display = 'none';
     }
   }
 
@@ -1401,8 +1413,7 @@ if('serviceWorker' in navigator){
     document.getElementById('actionDetailOv').classList.add('open');
   }
 
-  // Charger les actions au démarrage
-  window.addEventListener('load', ()=>{ if(typeof _sb !== 'undefined') loadActions(); });
+  // loadActions sera appelé après l'init de _sbPub (voir bas du script public)
 
   function openCarteMembre(e){
     e.preventDefault();
@@ -2529,10 +2540,9 @@ document.getElementById('btnContact').addEventListener('click',async()=>{
 });
 
 // ── Inscription Supabase + email ──────────────────────
-const _sbPub = supabase.createClient(
-  'https://pbhqvmtepipmldfncths.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiaHF2bXRlcGlwbWxkZm5jdGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MjU3OTAsImV4cCI6MjA4MjAwMTc5MH0.M-0qndrCgH2r3TQDW4I_THvrEYe_nZx51kGKjiF4egg'
-);
+const _sbPub = getSB();
+// ── Chargement des Actions & Réalisations publiques ──
+loadActions();
 document.getElementById('btnRegister').addEventListener('click',async()=>{
   const btn=document.getElementById('btnRegister');
   const nom=document.getElementById('i_nom').value.toUpperCase().trim();
@@ -2608,10 +2618,7 @@ document.getElementById('btnRegister').addEventListener('click',async()=>{
 // ═══════════════════════════════════════════════════════════════════
 // SUPABASE CONFIG
 // ═══════════════════════════════════════════════════════════════════
-const _sb = supabase.createClient(
-  'https://pbhqvmtepipmldfncths.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBiaHF2bXRlcGlwbWxkZm5jdGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MjU3OTAsImV4cCI6MjA4MjAwMTc5MH0.M-0qndrCgH2r3TQDW4I_THvrEYe_nZx51kGKjiF4egg'
-);
+const _sb = getSB();
 
 function _mToSB(m){
   const s=m.statut||'Autre';
