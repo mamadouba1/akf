@@ -1093,7 +1093,7 @@ if('serviceWorker' in navigator){
         <button class="don-modal-close" onclick="document.getElementById('actionDetailOv').classList.remove('open')">✕</button>
       </div>
       <div style="overflow-y:auto;max-height:calc(90vh - 60px)">
-        <div id="actionDetailMedia" style="width:100%;max-height:320px;overflow:hidden;background:#f1f5f9"></div>
+        <div id="actionDetailMedia" style="width:100%;overflow:hidden;background:#fff"></div>
         <div style="padding:20px" id="actionDetailCorps"></div>
       </div>
     </div>
@@ -1237,7 +1237,7 @@ if('serviceWorker' in navigator){
     document.getElementById('actionDetailTitre').textContent = a.titre||'';
     let mediaHTML = '';
     if(a.image_url){
-      mediaHTML = `<img src="${a.image_url}" alt="${(a.titre||'').replace(/"/g,'')}" style="width:100%;object-fit:contain;display:block;background:#fff;max-height:600px">`;
+      mediaHTML = `<img src="${a.image_url}" alt="${(a.titre||'').replace(/"/g,'')}" style="width:100%;height:auto;display:block;background:#fff">`;
     } else if(a.video_url){
       const yt = a.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?\/]+)/);
       mediaHTML = yt
