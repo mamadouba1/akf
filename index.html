@@ -228,7 +228,7 @@
     /* Cartes actions */
     .action-card{background:#fff;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.07);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s}
     .action-card:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(0,0,0,.13)}
-    .action-card-media{width:100%;max-height:280px;min-height:160px;object-fit:contain;display:block;background:#f8fafc}
+    .action-card-media{width:100%;max-height:420px;object-fit:contain;display:block;background:#fff;padding:8px 0}
     .action-card-media-placeholder{width:100%;height:180px;background:linear-gradient(135deg,#00204A,#1E40AF);display:flex;align-items:center;justify-content:center;font-size:3rem}
     .action-card-body{padding:16px}
     .action-card-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:800;margin-bottom:8px}
@@ -1196,7 +1196,8 @@ if('serviceWorker' in navigator){
         return;
       }
       _allActions = data;
-      renderActions(_allActions);
+      _currentActions = data;
+      renderActions(_currentActions);
     } catch(e){ grid.innerHTML = ''; }
   }
 
@@ -1204,13 +1205,13 @@ if('serviceWorker' in navigator){
     const grid = document.getElementById('actions-grid');
     if(!items || items.length === 0){ grid.innerHTML = ''; return; }
     const labels = {action:'🚀 Action en cours', realisation:'✅ Réalisation', evenement:'📅 Événement'};
-    grid.innerHTML = items.map(a => {
+    grid.innerHTML = items.map((a, idx) => {
       const date = a.date_publication ? new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '';
       const cat  = a.categorie || 'action';
       const media = a.image_url
-        ? `<img class="action-card-media" src="${a.image_url}" alt="${a.titre}" onerror="this.style.display='none'">`
+        ? `<img class="action-card-media" src="${a.image_url}" alt="${(a.titre||'').replace(/"/g,'')}" onerror="this.style.display='none'">`
         : `<div class="action-card-media-placeholder">${a.video_url?'🎬':'🌟'}</div>`;
-      return `<div class="action-card" onclick='openActionDetail(${JSON.stringify(a)})'>
+      return `<div class="action-card" onclick="openActionDetail(${idx})">
         ${media}
         <div class="action-card-body">
           <span class="action-card-badge ${cat}">${labels[cat]||cat}</span>
@@ -1222,16 +1223,21 @@ if('serviceWorker' in navigator){
     }).join('');
   }
 
+  let _currentActions = []; // actions actuellement affichées (après filtre)
+
   function filterActions(filtre){
     document.querySelectorAll('.akf-filtre-btn').forEach(b => b.classList.toggle('active', b.dataset.filtre===filtre));
-    renderActions(filtre==='tous' ? _allActions : _allActions.filter(a=>a.categorie===filtre));
+    _currentActions = filtre==='tous' ? _allActions : _allActions.filter(a=>a.categorie===filtre);
+    renderActions(_currentActions);
   }
 
-  function openActionDetail(a){
+  function openActionDetail(idx){
+    const a = _currentActions[idx];
+    if(!a) return;
     document.getElementById('actionDetailTitre').textContent = a.titre||'';
     let mediaHTML = '';
     if(a.image_url){
-      mediaHTML = `<img src="${a.image_url}" alt="${a.titre}" style="width:100%;max-height:320px;object-fit:cover;display:block">`;
+      mediaHTML = `<img src="${a.image_url}" alt="${(a.titre||'').replace(/"/g,'')}" style="width:100%;object-fit:contain;display:block;background:#fff;max-height:600px">`;
     } else if(a.video_url){
       const yt = a.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?\/]+)/);
       mediaHTML = yt
