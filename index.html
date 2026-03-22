@@ -2449,11 +2449,8 @@ function _tToSB(t, forUpdate=false){
     date_fin:      safeDate(t.date_fin),
     relance:       safeDate(t.relance),
     commentaires:  t.commentaires||'',
-    commission:    commissionLabel,
     commission_id: COMMISSION_MAP[commissionLabel]||2,
-    statut:        t.statut||'À faire',
     statut_id:     STATUT_T_MAP[t.statut]||1,
-    priorite:      t.priorite||'Moyenne',
     priorite_id:   PRIORITE_MAP[t.priorite]||2,
   };
   // id auto-généré par Supabase
